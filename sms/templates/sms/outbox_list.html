@@ -1,0 +1,87 @@
+{% extends 'accounts/base_app.html' %}
+{% load staticfiles %}
+
+
+{% block content %}
+
+    <div class="w3-center">
+        <h4 class="w3-text-blue"><u>SMS outbox</u></h4>
+    </div>
+
+    <div class="w3-margin w3-row">
+        <form action=" " method="post">
+            {% csrf_token %}
+            <div class="w3-col l2 m2 s2 w3-margin-right">
+                <input type="text"
+                       name="start_date"
+                       class="w3-input datepicker-required"
+                       placeholder="From">
+            </div>
+            <div class="w3-col l2 m2 s2 w3-margin-right">
+                <input type="text"
+                        name="end_date"
+                       class="w3-input datepicker-required"
+                       placeholder="To">
+            </div>
+            <div class="w3-col l2 m2 s2 w3-margin-right">
+                <input type="text"
+                       name="key_word"
+                       class="w3-input"
+                       placeholder="Key word">
+            </div>
+            <div class="w3-col l1 m1 sm1 w3-margin-right">
+                <button type="submit" class="w3-btn w3-blue-gray">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <div class="w3-col l4 m4 s4">
+                <span class="pull-right">
+                    <a class="w3-btn-floating w3-blue-gray w3-text-white ctrl-get-sms-form">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="w3-margin">
+        <div class="w3-container id="inbox-container">
+            {% if outboxmsgs %}
+                <table class="w3-table w3-striped w3-hoverable">
+                    <thead class="w3-grey w3-text-white">
+                        <tr>
+                            <td>
+                                Phone number
+                            </td>
+                            <td>
+                                Message
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for message in outboxmsgs%}
+                            <tr class="clickable-row" data-href="#">
+                                <td>{{ message.phone_number }}</td>
+                                <td>
+                                    <span>
+                                        {{ message.message }}
+                                    </span>
+                                    <span class="pull-right w3-small w3-text-teal">
+                                        {{ message.date_sent | date:"d M Y g:i:s a"  }}
+                                    </span>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <div class="list-group">
+                        <div class="list-group-item">
+                            <span class="text-center">This tab folder is empty.</span>
+                        </div>
+                    </div>
+                {% endif %}
+        </div>
+    </div>
+{% endblock %}
+

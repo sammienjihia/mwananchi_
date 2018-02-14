@@ -1,0 +1,130 @@
+{% load static %}
+{% block content %}
+
+    <div class="row">
+      <div class="col-lg-6">
+          <div class="w3-panel w3-card-2">
+           <div class="border-bottom">
+             <h4>
+               <i class="fa fa-twitter w3-text-blue"></i>&nbsp;&nbsp;&nbsp; Twitter
+             </h4>
+           </div>
+           <div class="panel-body"
+               style="height: 250px;">
+            <div class="w3-row">
+                <div class="w3-col l6 m6 s6">
+                     <div class="panel ">
+                         <div class="panel-heading">
+                             <a href="{% url 'twitter:tweet_search'%}">Twitter Search</a>
+                         </div>
+                         <div class="panel-body">
+
+                         </div>
+                     </div>
+                </div>
+{#                <div class="w3-col l6 m6 s6">#}
+{#                    <div class="panel ">#}
+{#                     <div class="panel-heading">#}
+{#                         <a href="{% url 'twitter:twitter_mentions'%}">Twitter Mentions</a>#}
+{#                     </div>#}
+{#                     <div class="panel-body">#}
+{##}
+{#                     </div>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+
+          </div>
+           </div>
+         </div>
+
+      <div class="col-lg-6">
+        <div class="w3-panel w3-card-2">
+          <div class="border-bottom">
+            <h4>
+              <i class="fa fa-exchange w3-text-deep-orange"></i>&nbsp;&nbsp;&nbsp; Quick Links
+            </h4>
+          </div>
+          <div class="panel-body"
+               style="height: 250px;">
+            <div class="w3-row">
+                <div class="w3-col l6 m6 s6">
+                     <div class="panel ">
+                         <div class="panel-heading">
+                             <a href="{% url 'sms:inbox_list'%}">Sms Inbox</a>
+                         </div>
+                         <div class="panel-body">
+
+                         </div>
+                     </div>
+                </div>
+                <div class="w3-col l6 m6 s6">
+                    <div class="panel ">
+                     <div class="panel-heading">
+                         <a href="{% url 'sms:outbox_list'%}">Sms Outbox</a>
+                     </div>
+                     <div class="panel-body">
+
+                     </div>
+                    </div>
+                </div>
+            </div>
+            <div class="w3-row">
+                <div class="w3-col l6 m6 s6">
+                     <div class="panel ">
+                         <div class="panel-heading">
+                             <a href="{% url 'campaign:index'%}">Campaign</a>
+                         </div>
+                         <div class="panel-body">
+
+                         </div>
+                     </div>
+                </div>
+{#                <div class="w3-col l6 m6 s6">#}
+{#                    <div class="panel ">#}
+{#                     <div class="panel-heading">#}
+{#                         <a href="{% url 'survey:survey_listing_page'%}">Survey</a>#}
+{#                     </div>#}
+{#                     <div class="panel-body">#}
+{##}
+{#                     </div>#}
+{#                    </div>#}
+{#                </div>#}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script>
+        (function () {
+            var srvRqst  =$.ajax({
+                url: '{% url "client:get_landing_page_data" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    $('#num-of-volunteers').html("<a href='{% url "volunteer:volunteer_list"%}'>"+
+                        parseFloat(responseObj['num_of_volunteers']).toLocaleString()+"</a>");
+                    $('#num-of-subscribers').html("<a href='{% url "subscribers:subscribers_list"%}'>" +
+                        parseFloat(responseObj['num_of_subscribers']).toLocaleString() +"</a>");
+                }catch(exp){
+
+                }finally {
+
+                }
+            });
+            srvRqst.fail(function (jHQR, errMsg, errThrown) {
+
+            });
+        })();
+    </script>
+

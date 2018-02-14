@@ -1,0 +1,158 @@
+{% load staticfiles %}
+{% load extratags %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MWANANCHI</title>
+
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/w3css/w3.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/font-awesome/css/font-awesome.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.css' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/LuminoStyles.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/styles.css' %}" />
+
+  <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+                <img src="{% static "accounts/img/mwananchi-logo2.png" %}"
+                 alt="Profile pic"
+                 class="w3-padding-8"
+                 style="height: 70px; width: 70px; margin-top:0px;"/>
+                 <b>MWANANCHI</b>
+
+            </div>
+        </div>
+	</nav>
+
+    <div class="col-sm-10 col-sm-offset-1 w3-container">
+        <br>
+        <br>
+        <div class="w3-container w3-grey">
+          <h4 class="w3-text-white">
+            <i class="fa fa-user"></i>&nbsp;&nbsp;&nbsp;Subscriber Registration( Subscribe to {{user.user.first_name}} {{user.user.last_name}})
+          </h4>
+        </div>
+        <form action=" " method="post"
+            enctype="multipart/form-data"
+            class="w3-container bordered w3-white w3-padding-4"
+            id="subscriber-subscription-form"><br>
+            <br>
+            {% if messages %}
+            {% for message in messages %}
+                <div class="w3-text-red w3-large">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+             <div class="w3-container w3-padding-4 w3-center">
+                 {% if user.profile_picture %}
+                    <img src="{{MEDIA_URL}}/{{user.profile_picture.url}}" alt="" style="width:80%;max-width:320px">
+                 {% endif %}
+                 {% if user.slogan %}
+                        <p class="w3-xxlarge w3-serif">{{user.slogan}}</p>
+                {% endif %}
+             </div>
+             <div>
+                {% csrf_token %}
+                {% for field in form %}
+                {% if field.name|check_field_name %}
+
+
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <p>
+                                {% if field.label|check_label_name %}
+                                <label>{{field.label}}</label>
+                                {% else %}
+                                    <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                {% endif %}
+                                </br>
+                                {{field}}
+                            </p>
+                        </div>
+
+                {% else %}
+                    {% if forloop.counter|divisible_by_2 %}
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <p>
+                                    {% if field.label|check_label_name%}
+                                    <label>{{field.label}}</label>
+                                    {% else %}
+                                        <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                    {% endif %}
+                                    <br>
+                                    {{field}}
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <p>
+                                    {% if field.label|check_label_name%}
+                                    <label>{{field.label}}</label>
+                                    {% else %}
+                                        <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                    {% endif %}
+                                    <br>
+                                    {{field}}
+                                </p>
+                            </div>
+                    {% endif %}
+
+                {% endif %}
+                {% endfor %}
+                <div class="form-group row">
+                  <div class="col-lg-offset-6  col-md-offset-6 col-sm-offset-6
+                       col-lg-6  col-md-6 col-sm-6">
+                    <button type="submit" class="w3-btn w3-blue-gray pull-right">Register</button>
+                  </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script src="{% static 'accounts/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/highcharts.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/modules/exporting.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/transition.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/moment.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.js' %}"></script>
+	<script src="{% static 'accounts/CustomJs/sidebar.js' %}"></script>
+
+    <script>
+    $('.datepicker-required').datetimepicker({
+        sideBySide:true,
+        collapse:true,
+        format: 'YYYY-MM-DD'
+    });
+    (function(){
+        document.onload = function() {
+            $('#subscriber-subscription-form').trigger('reset');
+        };
+    })();
+  </script>
+
+
+</body>
+</html>

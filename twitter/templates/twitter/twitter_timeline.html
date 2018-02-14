@@ -1,0 +1,174 @@
+{% extends 'accounts/landing.html'%}
+{% block content %}
+   <div class="w3-container">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#tweets-container">
+                    <i class="fa fa-twitter w3-text-blue"></i> Tweets
+                </a>
+            </li>
+        </ul>
+
+         <div class="tab-content">
+            <div class="tab-pane fade in active" id="tweets-container">
+
+                <br>
+                {%  if tweets %}
+                    {% for tweet in tweets %}
+                         <div class="w3-container w3-hover-light-grey">
+                            <div class="border-bottom-dotted">
+                                <h5 class="w3-text-blue">
+                                    <span class="pull-right w3-small">
+                                        <i class="fa fa-retweet"></i> &nbsp;&nbsp; {{ tweet.retweet }} &nbsp;&nbsp;<span class="w3-text-black">|</span>&nbsp;&nbsp;
+                                        <i class="fa fa-thumbs-o-up"></i> &nbsp;&nbsp; {{ tweet.favourite }} &nbsp;&nbsp;<span class="w3-text-black">|</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                                            {{ tweet.date | date:"d M Y g:i:s a" }} &nbsp;&nbsp;
+                                    </span>
+                                </h5>
+                            </div>
+
+                            <br>
+                            <p class="w3-text-black w3-padding">
+                                {{ tweet.text }}
+                            </p>
+                        </div>
+                        <br>
+                    {% endfor %}
+                {% else %}
+
+                {% endif %}
+            </div>
+
+        </div>
+   </div>
+
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        (function () {
+             GetFrequentWords(5);
+            //On selecting number of words
+            $('#num-of-words-slider').slider({
+                animate:"slow",
+                orientation: "horizontal",
+                min: 5,
+                step: 1,
+                max: 50,
+                slide: function(e, ui){
+                    var num_of_words = $(this).slider( "option", "value" );
+                    $('#num-of-words').html(num_of_words);
+                    GetFrequentWords(num_of_words);
+                }
+            });
+        })();
+
+        (function(){
+             var srvRqst = $.ajax({
+                url: "{% url 'twitter:get_sentiment_analysis' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['sentiment']);
+                        data.push(parseFloat(responseObj[i]['count']));
+                      }
+                      PlotSentimentAnalysis(categories, data);
+                }catch(ex){}finally {}
+            });
+        })();
+
+        function GetFrequentWords(num_of_words){
+            var srvRqst = $.ajax({
+                url: "{% url 'twitter:get_num_of_words' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    num_of_words : num_of_words
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['word']);
+                        data.push(parseFloat(responseObj[i]['count']));
+                      }
+                      PlotWordCount(categories, data);
+                }catch(ex){}finally {}
+            });
+        }
+
+         function PlotWordCount(categories, data){
+              Highcharts.chart('word-count-frequency-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Word frequency in tweets'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Word frequncy count',
+                        data: data
+                    }]
+              });
+        }
+
+        function PlotSentimentAnalysis(categories, data){
+              Highcharts.chart('twitter-sentiment-analysis-chart-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Sentiment analysis in tweets'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Sentiment analysis',
+                        data: data
+                    }]
+              });
+        }
+    </script>
+{% endblock %}

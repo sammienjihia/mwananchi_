@@ -1,0 +1,85 @@
+{% extends 'accounts/landing.html' %}
+
+{% block content %}
+    {% if request.user.is_superuser == True and  request.user.is_staff  == True %}
+        {% include 'accounts/settings_page_admin.html' %}
+    {% elif  request.user.is_superuser == False and  request.user.is_staff  == True%}
+        {% include 'accounts/settings_page_client.html' %}
+    {% elif request.user.is_superuser == False and  request.user.is_staff  == False %}
+        {% include 'accounts/settings_page_volunteer.html' %}
+    {% endif %}
+{% endblock %}
+
+{% block extrahead %}
+     <script>
+        $(document).on('click', '#btn-change-password', function(e){
+        e.preventDefault();
+        $('#btn-change-password').prop('disabled', true);
+        var currentPassword = $('#current-password').val();
+        var newPassword = $('#new-password').val();
+        var confirmPassword = $('#confirm-password').val();
+        var errorExists = false;
+
+        if(currentPassword.length < 8){
+            $('#current-password').addClass('input-error');
+            errorExists = true;
+        }else{
+            $('#current-password').removeClass('input-error');
+        }
+
+        if(newPassword.length < 8){
+            $('#new-password').addClass('input-error');
+            errorExists = true;
+        }else{
+            $('#new-password').removeClass('input-error');
+        }
+
+        if(newPassword !== confirmPassword){
+            $('#confirm-password').addClass('input-error');
+            errorExists = true;
+        }else{
+             $('#confirm-password').removeClass('input-error');
+        }
+
+        if(errorExists === true){
+           $('#btn-change-password').prop('disabled', false);
+           return;
+        }
+
+        var data = {
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        };
+
+        var srvRqst = $.ajax({
+            url: "{% url 'accounts:change_password' %}",
+            data: data,
+            type: 'post',
+            datatype: 'json'
+        });
+
+        srvRqst.done(function (response){
+            try{
+                var responseObj = $.parseJSON(response);
+                if(responseObj['STATUS'] === '1'){
+                    $('#edit-password-form').trigger('reset');
+                    $('#password-response').html('');
+                    $('#confirm-password-response').removeClass('w3-text-red')
+                        .addClass('w3-text-green w3-large')
+                        .html(responseObj['MESSAGE']);
+                }else{
+                    $('#confirm-password-response').html(responseObj['MESSAGE']);
+                }
+            }catch(exp){}
+            finally{
+                  $('#btn-change-password').prop('disabled', false);
+            }
+        });
+
+        srvRqst.fail(function (jxHQR, errorMsg, errThrown) {
+             $('#btn-change-password').prop('disabled', false);
+        });
+    });
+ </script>
+{% endblock %}

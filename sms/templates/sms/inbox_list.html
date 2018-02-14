@@ -1,0 +1,714 @@
+{% extends 'accounts/base_app.html' %}
+{% load staticfiles %}
+
+{% block content %}
+   <h4 class="w3-text-blue w3-center"><u>SMS inbox</u></h4>
+    <div class="w3-margin w3-row">
+        <form action=" " method="post">
+            {% csrf_token %}
+            <div class="w3-col l2 m2 s2 w3-margin-right">
+                <input type="text"
+                       name="start_date"
+                       class="w3-input datepicker-required"
+                       placeholder="From">
+            </div>
+            <div class="w3-col l2 m2 s2">
+                <input type="text"
+                        name="end_date"
+                       class="w3-input datepicker-required"
+                       placeholder="To">
+            </div>
+            <div class="w3-col l2 m2 s2">
+                <select name="sentiment">
+                    <option value="">Select sentiment</option>
+                    <option value="NEGATIVE">Negative</option>
+                    <option value="POSITIVE">Positive</option>
+                    <option value="NEUTRAL">Neutral</option>
+                </select>
+            </div>
+            <div class="w3-col l3 m3 s3 w3-margin-right">
+                <input type="text"
+                       name="key_word"
+                       class="w3-input"
+                       placeholder="Key word or phone number">
+            </div>
+            <div class="w3-col l1 m1 sm1 w3-margin-right">
+                <button type="submit" class="w3-btn w3-blue-gray">
+                    <i class="fa fa-search"></i>
+                </button>
+            </div>
+            <div class="w3-col l1 m1 s1">
+                <span class="pull-right">
+                    <a class="w3-btn-floating w3-blue-gray w3-text-white ctrl-get-sms-form">
+                        <i class="fa fa-pencil"></i>
+                    </a>
+                </span>
+            </div>
+        </form>
+    </div>
+    <div class="w3-margin">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#inbox-container">
+                    <i class="fa fa-envelope-open-o w3-text-green"></i> Inbox
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#analysis-container" id="analysis-container-tab">
+                    <i class="fa fa-line-chart w3-text-red"></i> Daily inbox count
+                </a>
+            </li>
+        </ul>
+        <!-- tab panes -->
+        <div class="tab-content">
+            <div class="tab-pane fade in active" id="inbox-container">
+                {% if inboxmsgs %}
+                    <div class="w3-container" id="inbox-menu-div" style="display: none;">
+                        <a class="w3-text-red cursor-pointer" id="ctrl-delete-inbox"><i class="fa fa-archive"></i> Archive </a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a class="w3-text-teal cursor-pointer" id="ctrl-reply-to-inbox"><i class="fa fa-reply"></i> Reply </a>
+                        &nbsp;&nbsp;&nbsp;
+                        <a class="w3-text-blue cursor-pointer" id="ctrl-get-frequent-words"><i class="fa fa-comment-o"></i> Frequent words </a>
+                        &nbsp&nbsp
+                        <a class="w3-text-green cursor-pointer" id="ctrl-sentiment-analysis"><i class="fa fa-smile-o"></i> Sentiment analysis </a>
+                    </div>
+                    <br>
+                    <table class="w3-table w3-striped w3-hoverable">
+                        <thead class="w3-grey w3-text-white">
+                            <tr>
+                                <th>
+                                   <input type="checkbox" name="check_all_inbox" id="check-all-inbox">
+                                </th>
+                                <th>
+                                    Phone number
+                                </th>
+                                <th>
+                                    Message
+                                </th>
+                                <th class="w3-center">
+                                    Sentiment
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for message in inboxmsgs%}
+                                <tr id="row-id-{{ message.id }}">
+                                    <td>
+                                       <input type="checkbox"
+                                          class="check-inbox"
+                                          id="check-inbox-{{ message.id}}"
+                                          name="check_inbox"
+                                          value="{{ message.id }}">
+                                    </td>
+                                    <td>{{ message.phone_number }}</td>
+                                    {% if message.is_received %}
+                                        <td class="cursor-pointer ctrl-receive-sms"
+                                             data-value="{{ message.id }}">
+                                             <span style="white-space: nowrap;
+                                                    text-overflow: ellipsis;
+                                                    display:block;
+                                                    width: 300px;
+                                                    overflow: hidden;">
+                                                {{ message.message }}
+                                             </span>
+                                            <span class="pull-right w3-small w3-text-teal">
+                                                {{ message.date_received | date:"d M Y g:i:s a"  }}
+                                            </span>
+                                        </td>
+                                    {% else %}
+                                        <td class="cursor-pointer ctrl-receive-sms text-bold"
+                                             data-value="{{ message.id }}">
+                                             <span style="white-space: nowrap;
+                                                    text-overflow: ellipsis;
+                                                    display:block;
+                                                    width: 300px;
+                                                    overflow: hidden;">
+                                                {{ message.message }}
+                                             </span>
+                                            <span class="pull-right w3-small w3-text-teal">
+                                                {{ message.date_received | date:"d M Y g:i:s a"  }}
+                                            </span>
+                                        </td>
+                                    {% endif %}
+                                    <td class="w3-center">
+                                        {% if message.sentiment  == 'POSITIVE'%}
+                                            <span><i class="fa fa-thumbs-o-up w3-text-green"></i> </span>
+                                        {% elif message.sentiment == 'NEGATIVE' %}
+                                             <span><i class="fa fa-thumbs-o-down w3-text-red"></i> </span>
+                                        {% else %}
+                                             <span><i class="fa fa-hand-stop-o w3-text-blue"></i> </span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                    {% if offsetExist is True %}
+                        <span class="pull-right">
+                            <a class="w3-btn w3-blue-gray"
+                                href="{% url 'sms:inbox_list' offset=prevOffset %}">
+                                <i class="fa fa-angle-double-left"></i>
+                            </a>
+                            <a class="w3-btn w3-blue-gray"
+                                 href="{% url 'sms:inbox_list' offset=nextOffset %}">
+                                <i class="fa fa-angle-double-right"></i>
+                            </a>
+                        </span>
+                     {% endif %}
+                    {% else %}
+                        <div class="list-group">
+                            <div class="list-group-item">
+                                <span class="text-center">This tab folder is empty.</span>
+                            </div>
+                        </div>
+                    {% endif %}
+                    <br>
+            </div>
+            <div class="tab-pane fade in" id="analysis-container">
+                <div class="w3-container w3-card-2">
+                    <div class="border-bottom-dotted row w3-padding">
+                        <form class="form-horizontal pull-right">
+                            <div class="w3-col l4 m4 s4 w3-margin-right">
+                                <input type="text"
+                                       id="start-date"
+                                       class="w3-input datepicker-required"
+                                       placeholder="From">
+                            </div>
+                            <div class="w3-col l4 m4 s4 w3-margin-right">
+                                <input type="text"
+                                        id="end-date"
+                                       class="w3-input datepicker-required"
+                                       placeholder="To">
+                            </div>
+                            <div class="w3-col l1 m1 sm1 w3-margin-right">
+                                <a class="w3-btn w3-blue-gray" id="btn-get-inbox-analysis">
+                                    <i class="fa fa-search"></i>
+                                </a>
+                            </div>
+                        </form>
+                        <br>
+                        <br>
+
+                    </div>
+                    <div class="" style="height: 400px;" id="sms-daily-analysis-div">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        (function () {
+            $('.check-inbox, #check-all-inbox').prop('checked', false);
+        })();
+
+        $(document).on('click', '#analysis-container-tab', function(e){
+            var srvRqst = $.ajax({
+                url: "{% url 'sms:get_last_7_day_sms_count' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['date']);
+                        data.push(parseFloat(responseObj[i]['num']));
+                      }
+                      window.setTimeout(function(){
+                          PlotDailySMSCount(categories, data);
+                      }, 1000);
+
+                }catch(ex){}finally {}
+            });
+        });
+
+
+        $(document).on('click', '.ctrl-receive-sms', function () {
+            $(this).removeClass('text-bold');
+            var message_id = $(this).data('value');
+            var srvRqst = $.ajax({
+                url: '{% url "sms:mark_as_read" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    message_id: message_id
+                },
+                type: 'post',
+                datatype: 'json'});
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var message = responseObj['MESSAGE'];
+                    var body = '<div class="w3-container">'
+                        +'<p>'+message+'</p>'
+                        +'<p>'
+                        +'<label class="w3-text-black"><b>Reply</b></label>'
+                        +'<input class="w3-input w3-text-blue"'
+                        +'  type="text"'
+                        +'  id="reply-message"'
+                        +'  autofocus="autofocus"'
+                        +'  placeholder="Message">'
+                        +'<span id="reply-message-response" class="w3-text-red"></span>'
+                        +'</p></div>';
+
+                    var footer = '<a class="w3-btn w3-left w3-small w3-red w3-text-white" data-dismiss="modal">Cancel</a>'
+                        +'<a class="w3-btn w3-right  w3-blue-grey w3-text-white"  id="btn-reply-to-message" data-value="'+message_id+'">'
+                        +'<i class="fa fa-send"></i> Reply'
+                        +'</a>';
+
+                    $('#page-modal-header').html('');
+                    $('#page-modal-body').html(body);
+                    $('#page-modal-footer').html(footer)
+                    $('#page-modal').modal('show');
+                }catch (exp){
+
+                }finally {}
+            });
+        });
+
+        $(document).on('click', '#btn-reply-to-message', function(e){
+            e.preventDefault();
+            var message_id = $(this).data('value');
+            var message = $('#reply-message').val();
+            message = message.trim();
+            if(message.length ==  0){
+                $('#reply-message').addClass('input-error');
+                return;
+            }else{
+                $('#reply-message').removeClass('input-error');
+            }
+
+            var srvRqst = $.ajax({
+                url: '{% url "sms:reply_to_single_message" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    message_id: message_id,
+                    message: message
+                },
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function(){
+                    $('#btn-reply-to-message').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                }});
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var body = '<h4 class="w3-center">';
+                    if(responseObj['STATUS'] == '1'){
+                        body += '<i class="fa fa-check-circle  fa-2x w3-text-green"></i> Message sent.';
+                    }
+                    else{
+                        body += '<i class="fa fa-times-circle  fa-2x w3-text-red"></i> Failed to send message.';
+                    }
+                    body += '</h4>';
+                    $('#page-modal-header').html('');
+                    $('#page-modal-body').html(body);
+                    $('#page-modal-footer').html('');
+                }catch(exp){
+
+                }finally {
+                    $('#btn-reply-to-message').html('<i class="fa fa-send"></i> Reply');
+                }
+            });
+        });
+
+    </script>
+
+    <!--Check inbox-->
+    <script>
+        $(document).on('change', '#check-all-inbox', function () {
+            $('[name ="check_inbox"]').prop('checked', this.checked);
+
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+
+            if(recipients.length > 0){
+                $('#inbox-menu-div').show();
+            }else{
+                $('#inbox-menu-div').hide();
+            }
+        });
+
+        $(document).on('change', '.check-inbox', function(){
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+            if(recipients.length > 0){
+                $('#inbox-menu-div').show();
+            }else{
+                $('#inbox-menu-div').hide();
+            }
+        });
+    </script>
+
+    <!--Reply to batch inbox-->
+    <script>
+        $(document).on('click', '#ctrl-reply-to-inbox', function(e){
+            e.preventDefault();
+            var body = '<div class="w3-container">'
+                        +'<p>'
+                        +'<label>Reply</label>'
+                        +'<input class="w3-input w3-text-blue"'
+                        +'  type="text"'
+                        +'  id="reply-message"'
+                        +'  placeholder="Message">'
+                        +'<span id="reply-message-response" class="w3-text-red"></span>'
+                        +'</p></div>';
+
+            var footer = '<a class="w3-btn w3-left w3-small w3-red w3-text-white" data-dismiss="modal">Cancel</a>'
+                +'<a class="w3-btn w3-right  w3-blue-grey w3-text-white" id="btn-reply-to-batch-inbox">'
+                +'<i class="fa fa-send"></i> Reply'
+                +'</a>';
+
+            $('#page-modal-header').html('');
+            $('#page-modal-body').html(body);
+            $('#page-modal-footer').html(footer)
+            $('#page-modal').modal('show');
+        });
+
+        $(document).on('click', '#btn-reply-to-batch-inbox', function(e){
+            e.preventDefault();
+
+            var message = $('#reply-message').val();
+            message = message.trim();
+            if(message.length === 0){
+                $('#reply-message').addClass('input-error');
+                return;
+            }else{
+                $('#reply-message').removeClass('input-error');
+            }
+
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+
+             var srvRqst = $.ajax({
+                url: '{% url "sms:reply_batch_inbox" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    recipients: JSON.stringify(recipients),
+                    message: message
+                },
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function(){
+                    $('#btn-reply-to-batch-inbox').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                }
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response)
+                    if(responseObj['STATUS'] === '1'){
+                        for(var i = 0; i< recipients.length; i++){
+                            $('#check-inbox-'+recipients[i]).prop('checked', false);
+                        }
+                        $('#inbox-menu-div').hide();
+                        var body = '<h4 class="w3-center">';
+                        body += '<i class="fa fa-check-circle  fa-2x w3-text-green"></i> Message sent.';
+                        body += '</h4>';
+                        $('#page-modal-header').html('');
+                        $('#page-modal-body').html(body);
+                        $('#page-modal-footer').html('');
+                    }
+                }catch (exp){
+
+                }finally {
+                    $('#btn-reply-to-batch-inbox').html('<i class="fa fa-send"></i> Reply');
+                }
+            });
+
+        });
+    </script>
+
+    <!--Delete inbox -->
+    <script>
+        $(document).on('click', '#ctrl-delete-inbox', function(e){
+            e.preventDefault();
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+
+            var srvRqst = $.ajax({
+                url: '{% url "sms:delete_batch_inbox" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    recipients: JSON.stringify(recipients)
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '1'){
+                        for(var i = 0; i< recipients.length; i++){
+                            $('#row-id-'+recipients[i]).remove();
+                        }
+                    }
+                }catch (exp){
+
+                }finally {}
+            });
+        });
+    </script>
+
+    <!--Get inbox analysis-->
+    <script>
+        $(document).on('click', '#btn-get-inbox-analysis', function(e){
+            var start_date = $('#start-date').val();
+            var end_date = $('#end-date').val();
+            var srvRqst = $.ajax({
+                url: "{% url 'sms:inbox_analysis' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    start_date : start_date,
+                    end_date : end_date,
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['date']);
+                        data.push(parseFloat(responseObj[i]['num']));
+                      }
+                      PlotDailySMSCount(categories, data);
+                }catch(ex){}finally {}
+            });
+        });
+        function PlotDailySMSCount(categories, data){
+              Highcharts.chart('sms-daily-analysis-div', {
+                    chart: {
+                        type: 'spline'
+                    },
+                    title: {
+                        text: 'Daily SMS count'
+                    },
+                    xAxis: {
+                        categories: categories,
+                        type: 'datetime',
+                        crosshair: true
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Daily sms count',
+                        data: data
+                    }]
+              });
+        }
+    </script>
+
+    <!--Get most frequent words-->
+    <script>
+        $(document).on('click', '#ctrl-get-frequent-words', function(e){
+            e.preventDefault();
+            var body = '<div class="w3-container">'
+                +'  <div class="border-bottom-dotted w3-padding-bottom">'
+                +'      <span class="w3-padding">'
+                +'        Number of words [<span id="num-of-words">5</span>]'
+                +'      </span>'
+                +'      <br>'
+                +'      <br>'
+                +'      <div class="w3-center" id="num-of-words-slider" style="width: 50%;"></div>'
+                +'  </div>'
+                +'<div style="height: 400px" id="word-count-frequency-div"></div>'
+                +'</div>';
+            $('#page-modal-header').html('View the frequently used words');
+            $('#page-modal-body').html(body);
+            $('#page-modal-footer').html('');
+            $('#page-modal').modal('show');
+            GetFrequentWords(5);
+            //On selecting number of words
+            $('#num-of-words-slider').slider({
+                animate:"slow",
+                orientation: "horizontal",
+                min: 5,
+                step: 1,
+                max: 50,
+                slide: function(e, ui){
+                    var num_of_words = $(this).slider( "option", "value" );
+                    $('#num-of-words').html(num_of_words);
+                    GetFrequentWords(num_of_words);
+                }
+            });
+        });
+
+        function GetFrequentWords(num_of_words){
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+            var srvRqst = $.ajax({
+                url: "{% url 'sms:get_num_of_words' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    num_of_words : num_of_words,
+                    recipients: JSON.stringify(recipients)
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['word']);
+                        data.push(parseFloat(responseObj[i]['count']));
+                      }
+                      PlotWordCount(categories, data);
+                }catch(ex){}finally {}
+            });
+        }
+
+
+        function PlotWordCount(categories, data){
+              Highcharts.chart('word-count-frequency-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Word frequency in sms'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Word frequncy count',
+                        data: data
+                    }]
+              });
+        }
+    </script>
+    <!--sms sentiment analysis-->
+    <script>
+        $('#ctrl-sentiment-analysis').on('click',function(e){
+           e.preventDefault();
+           var body = '<div class="w3-container">'
+                +'  <div class="w3-padding-bottom">'
+                +'      <br>'
+                +'      <br>'
+                +'      <div class="w3-center" id="num-of-words-slider" style="width: 50%;"></div>'
+                +'  </div>'
+                +'<div style="height: 400px" id="word-count-frequency-div"></div>'
+                +'</div>';
+            $('#page-modal-header').html('SMS sentiment analysis');
+            $('#page-modal-body').html(body);
+            $('#page-modal-footer').html('');
+            $('#page-modal').modal('show');
+            GetSentimentAnalysis()
+        });
+
+        function GetSentimentAnalysis(){
+            var recipients = [];
+            $('[name ="check_inbox"]:checked').each(function(){
+                recipients.push($(this).val())
+            });
+            console.log(recipients);
+            var srvRqst = $.ajax({
+                url: "{% url 'sms:get_sentiment_analysis' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    recipients: JSON.stringify(recipients)
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var key in responseObj){
+                        categories.push(key);
+                        data.push(parseFloat(responseObj[key]));
+
+                    }
+                    PlotSentimentAnalysis(categories, data);
+                }catch(ex){}finally {}
+            });
+
+        }
+        function PlotSentimentAnalysis(categories, data){
+              Highcharts.chart('word-count-frequency-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'SMS Sentiment Analysis'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'polarity count',
+                        data: data
+                    }]
+              });
+        }
+    </script>
+
+{% endblock %}
+

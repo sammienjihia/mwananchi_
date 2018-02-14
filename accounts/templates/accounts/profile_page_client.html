@@ -1,0 +1,492 @@
+{% load static %}
+{% load staticfiles %}
+<div class="w3-container w3-card-2">
+        <h4 class="w3-center w3-text-blue">Client profile</h4>
+        <div class="w3-row">
+            <div class="w3-col l3 m3 s3 w3-container">
+                {% if profile_picture_exist %}
+                    <img src="{{MEDIA_URL}}/{{profile_picture_url}}"
+                         alt="Profile pic"
+                         class="w3-padding-8"
+                         style="height: 250px; width: 100%;"/>
+                {% else %}
+                     <img src="{% static "accounts/img/user_profile_image.png" %}"
+                     alt="Profile pic"
+                     class="w3-padding-8"
+                     style="height: 250px; width: 100%;"/>
+                {% endif %}
+
+                <div class="w3-container">
+                    <br>
+                    <br>
+                    <p>
+                    <a class="w3-text-blue cursor-pointer"
+                       id="ctrl-get-profile-pic-form">
+                        <b>
+                            <i class="fa fa-pencil"></i>&nbsp; Edit profile picture
+                        </b>
+                    </a>
+                    </p>
+                </div>
+            </div>
+            <div class="w3-rest w3-container">
+                <table class="w3-table w3-striped">
+                    <tr>
+                       <th>Full name</th>
+                       <td>{{ request.user.first_name }} {{ request.user.last_name }}</td>
+                    </tr>
+                    <tr>
+                       <th>Email address</th>
+                       <td>{{ request.user.email }}</td>
+                    </tr>
+
+                    <tr>
+                       <th>Username</th>
+                       <td>{{ request.user.username }}</td>
+                    </tr>
+
+                    <tr>
+                       <th>Twitter account</th>
+                       <td></td>
+                    </tr>
+
+                    <tr>
+                       <th>Region name</th>
+                       <td>
+                           {{ aspirant.region_name }}&nbsp;&nbsp;&nbsp;&nbsp;
+                           <a class="cursor-pointer w3-text-blue pull-right"
+                              id="ctrl-edit-region-name"
+                              data-toggle="tooltip"
+                              title="Edit region name"><i class="fa fa-pencil"></i> </a>
+                       </td>
+                    </tr>
+
+                    <tr>
+                       <th>County</th>
+                       <td>{{ aspirant.county.county_name}}</td>
+                    </tr>
+                    <tr>
+                       <th>Number of subscribers</th>
+                       <td>
+                           <a href="{% url 'subscribers:subscribers_list' %}">
+                            {{ subscriber_count }}
+                           </a>
+                       </td>
+                    </tr>
+                </table>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+
+{% block extrahead %}
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script>
+        $(document).on('click', '#ctrl-get-profile-pic-form', function (e) {
+            e.preventDefault();
+            var upload_form = '<div>'
+                +' <form enctype="multipart/form-data"'
+                +'  id="profile-picture-upload-form">'
+                +'  <label for="profile-picture-upload">'
+                +'  Select profile picture &nbsp;&nbsp;&nbsp;<span class="w3-text-orange w3-small">'
+                +'  .png, .jpg, .jpeg'
+                +'  </span>'
+                +'  </label>'
+                +'  <input type="file" id="profile-picture-upload" accept=".png, .jpg, .jpeg">'
+                +' <span id="profile-picture-upload-response"></span>'
+                +' </form>'
+                +'</div>';
+            $('#page-modal-dialog').addClass('modal-width-20');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('');
+            $('#page-modal').modal('show');
+        });
+
+        $(document).on('change', '#profile-picture-upload', function (e) {
+            e.preventDefault();
+            UploadProfilePicture();
+        });
+
+        function UploadProfilePicture(){
+        var fileSelect = document.getElementById('profile-picture-upload');
+        var file = fileSelect.files;
+        var formData = new FormData();
+
+        if(file[0].size/1000000 > 5){
+          $('#profile-picture-upload-response')
+            .html('The file is too large. Ensure that it\'s at most 5mb')
+            .addClass('w3-text-red')
+            .removeClass('w3-text-green');
+          return;
+        }else{
+            $('#profile-picture-upload-response')
+            .html('')
+            .removeClass('w3-text-red');
+        }
+
+        var fileName = fileSelect.value.split(/(\\|\/)/g).pop();
+        var extension = fileName.substring((fileName.lastIndexOf('.') + 1));
+        var allowedExt = ['jpg', 'png', 'jpeg'];
+        var extensionFoundAt = $.inArray(extension, allowedExt);
+
+        if(extensionFoundAt === -1){
+           $('#profile-picture-upload-response')
+            .html('Wrong file format. Use .jpg, .jpeg, or .png')
+            .addClass('w3-text-red')
+            .removeClass('w3-text-green');
+          return;
+        }else{
+           $('#batch-recipients-file-upload-response')
+            .html('')
+            .removeClass('w3-text-red');
+        }
+
+        formData.append('file', file[0], file[0].name);
+        formData.append('fileName', 'LIST_OF_SUBSCRIBERS');
+        formData.append('csrfmiddlewaretoken',  '{{ csrf_token }}');
+
+        var url = "{% url 'accounts:upload_profile_picture' %}";
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', url, true);
+
+        xhr.onload = function(){
+            if (xhr.status === 200){
+                var responseObj = $.parseJSON(xhr.responseText);
+                if(responseObj['STATUS'] === '1'){
+                    $('#profile-picture-upload-response')
+                    .html(responseObj['MESSAGE'])
+                    .removeClass('w3-text-red')
+                    .addClass('w3-text-green');
+
+                    window.setTimeout(function(){
+                        window.location.reload();
+                    }, 1300);
+                }
+                else{
+                   $('#profile-picture-upload-response')
+                    .html(responseObj['MESSAGE'])
+                    .removeClass('w3-text-green')
+                    .addClass('w3-text-red');
+                }
+            }else{
+
+            }
+        };
+        xhr.send(formData);
+    }
+    </script>
+
+
+     <!--Edit alias name-->
+    <script>
+        $(document).on('click', '#ctrl-edit-alias-name', function(e){
+            e.preventDefault();
+            var upload_form = '<div class="w3-container w3-padding">'
+                +' <form enctype="multipart/form-data"'
+                +'  id="alias-name-edit-form">'
+                +' <div class="form-group row">'
+                +' <div class="col-lg-8  col-md-8 col-sm-8">'
+                +' <p>'
+                +'   <label for="alias-name">'
+                +'      Edit alias name <span class="w3-text-red">*</span>'
+                +'   </label>'
+                +'   <input class="w3-input w3-text-blue"'
+                +'           type="text"'
+                +'           autofocus="autofocus"'
+                +'           id="alias-name"'
+                +'           placeholder="Alias name">'
+                +'   <span id="alias-name-response"></span>'
+                +' </p>'
+                +'</div>'
+                +'</div>'
+
+                +' <div class="form-group row">'
+                +'    <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'       <p>'
+                +'         <label for="password">Password <span class="w3-text-red">*</span></label>'
+                +'         <input class="w3-input w3-text-blue"'
+                +'           type="password"'
+                +'           autofocus="autofocus"'
+                +'           id="password"'
+                +'           placeholder="First name">'
+                +'         <span id="password-response"></span>'
+                +'       </p>'
+                +'     </div>'
+                +'     <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'      <br><br>'
+                +'       <a class="w3-btn w3-blue-gray w3-text-white pull-right" id="btn-edit-alias-name"><i class="fa fa-pencil"></i> Edit alias name</a>'
+                +'     </div>'
+                +' </form>'
+                +'<div class="row w3-padding-4 w3-container w3-text-black" id="srv-response"></div>'
+                +'</div>';
+
+            $('#page-modal-dialog').addClass('modal-width-60');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Edit alias name.');
+            $('#page-modal').modal('show');
+        });
+
+        $(document).on('click', '#btn-edit-alias-name', function(e){
+            e.preventDefault();
+            var errorExist = false;
+            var alias_name = $('#alias-name').val();
+            alias_name = alias_name.trim();
+            if(alias_name.length === 0){errorExist = false; $('#alias-name').addClass('input-error');}else{$('#alias-name').removeClass('input-error');}
+            var password = $('#password').val();
+            if(password.length < 5){errorExist=true; $('#password').addClass('input-error');}else{$('#password').removeClass('input-error');}
+            if(errorExist === true){
+                return;
+            }else{
+                var srvRqst = $.ajax({
+                    url: "{% url 'client:edit_alias_name' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        password: password,
+                        alias_name: alias_name
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-edit-alias-name').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '1'){
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#alias-name-edit-form').trigger('reset');
+
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 1300);
+
+                        }else{
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-edit-alias-name')
+                            .addClass('w3-text-green w3-large')
+                            .html('<i class="fa fa-pencil"></i> Edit alias name')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-edit-alias-name').html('<i class="fa fa-pencil"></i> Edit alias name')
+                            .prop('disabled', false);
+                });
+            }
+        });
+
+    </script>
+
+
+
+    <!--Region name-->
+    <script>
+        $(document).on('click', '#ctrl-edit-region-name', function(e){
+            e.preventDefault();
+            var upload_form = '<div class="w3-container w3-padding">'
+                +' <form enctype="multipart/form-data"'
+                +'  id="region-name-edit-form">'
+                +' <div class="form-group row">'
+                +' <div class="col-lg-8  col-md-8 col-sm-8">'
+                +' <p>'
+                +'   <label for="region-name">'
+                +'      Edit region name <span class="w3-text-red">*</span>'
+                +'   </label>'
+                +'   <input class="w3-input w3-text-blue"'
+                +'           type="text"'
+                +'           autofocus="autofocus"'
+                +'           id="region-name"'
+                +'           placeholder="Region name">'
+                +'   <span id="slogan-response"></span>'
+                +' </p>'
+                +'</div>'
+                +'</div>'
+
+                +' <div class="form-group row">'
+                +'    <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'       <p>'
+                +'         <label for="password">Password <span class="w3-text-red">*</span></label>'
+                +'         <input class="w3-input w3-text-blue"'
+                +'           type="password"'
+                +'           autofocus="autofocus"'
+                +'           id="password"'
+                +'           placeholder="First name">'
+                +'         <span id="password-response"></span>'
+                +'       </p>'
+                +'     </div>'
+                +'     <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'      <br><br>'
+                +'       <a class="w3-btn w3-blue-gray w3-text-white pull-right" id="btn-edit-region-name"><i class="fa fa-pencil"></i> Edit region name</a>'
+                +'     </div>'
+                +' </form>'
+                +'<div class="row w3-padding-4 w3-container w3-text-black" id="srv-response"></div>'
+                +'</div>';
+
+            $('#page-modal-dialog').addClass('modal-width-60');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Edit region name.');
+            $('#page-modal').modal('show');
+        });
+        $(document).on('click', '#btn-edit-region-name', function(e){
+            e.preventDefault();
+            var errorExist = false;
+            var region_name = $('#region-name').val();
+            if(region_name.length < 5){errorExist=true; $('#region-name').addClass('input-error');}else{$('#region-name').removeClass('input-error');}
+            var password = $('#password').val();
+            if(password.length < 5){errorExist=true; $('#password').addClass('input-error');}else{$('#password').removeClass('input-error');}
+            if(errorExist === true){
+                return;
+            }else{
+                var srvRqst = $.ajax({
+                    url: "{% url 'client:edit_region_name' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        password: password,
+                        region_name: region_name
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-edit-region-name').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '1'){
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#region-name-edit-form').trigger('reset');
+
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 1300);
+
+                        }else{
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-edit-region-name').html('<i class="fa fa-pencil"></i> Edit region name')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-edit-region-name').html('<i class="fa fa-pencil"></i> Edit region name')
+                            .prop('disabled', false);
+                });
+            }
+        });
+    </script>
+
+    <!--Edit slogan-->
+    <script>
+        $(document).on('click', '#ctrl-edit-slogan', function(e){
+            e.preventDefault();
+            var upload_form = '<div class="w3-container w3-padding">'
+                +' <form enctype="multipart/form-data"'
+                +'  id="slogan-edit-form">'
+                +' <div class="form-group">'
+                +' <div class="col-lg-12  col-md-12 col-sm-12">'
+                +' <p>'
+                +'   <label for="slogan">'
+                +'      Edit your slogan <span class="w3-text-red">*</span>'
+                +'   </label>'
+                +'   <textarea type="text" id="slogan" class="w3-input" autofocus="autofocus"></textarea>'
+                +'   <span id="slogan-response"></span>'
+                +' </p>'
+                +'</div>'
+                +'</div>'
+                +' <div class="form-group">'
+                +'    <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'       <p>'
+                +'         <label>Password <span class="w3-text-red">*</span></label>'
+                +'         <input class="w3-input w3-text-blue"'
+                +'           type="password"'
+                +'          id="password"'
+                +'           placeholder="First name">'
+                +'         <span id="password-response"></span>'
+                +'       </p>'
+                +'     </div>'
+                +'     <div class="col-lg-6  col-md-6 col-sm-6">'
+                +'      <br><br>'
+                +'       <a class="w3-btn w3-blue-gray w3-text-white pull-right" id="btn-edit-slogan"><i class="fa fa-pencil"></i> Edit</a>'
+                +'     </div>'
+                +'<div class="form-group row w3-padding-4 w3-container w3-text-black" id="srv-response"></div>'
+                +' </form>'
+                +'</div>';
+            $('#page-modal-dialog').addClass('modal-width-60');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Edit your slogan.');
+            $('#page-modal').modal('show');
+        });
+
+        $(document).on('click', '#btn-edit-slogan', function(e){
+            e.preventDefault();
+            var errorExist = false;
+            var slogan = $('#slogan').val();
+            slogan = slogan.trim();
+            if(slogan.length < 5){errorExist=true;  $('#slogan').addClass('input-error');}else{$('#slogan').removeClass('input-error');}
+            var password = $('#password').val();
+            if(password.length < 8){errorExist=true;  $('#password').addClass('input-error');}else{$('#password').removeClass('input-error');}
+            if(errorExist === true){
+                return;
+            }else{
+                var srvRqst = $.ajax({
+                    url: "{% url 'client:edit_slogan' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}',
+                        password: password,
+                        slogan: slogan
+                    },
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-edit-slogan').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '1'){
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#slogan-edit-form').trigger('reset');
+
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 1300);
+
+                        }else{
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-edit-slogan').html('<i class="fa fa-pencil"></i> Edit slogan')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-edit-slogan').html('<i class="fa fa-pencil"></i> Edit slogan')
+                        .prop('disabled', false);
+                });
+            }
+        });
+    </script>
+{% endblock %}
+
+
+
+
+

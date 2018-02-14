@@ -1,0 +1,243 @@
+{% extends 'accounts/landing.html'%}
+{% block content %}
+   <div class="w3-container">
+        {%  if survey_list %}
+            {% for survey in survey_list %}
+                 <div class="w3-container w3-card-2">
+                    <div class="border-bottom-dotted">
+                        <h4 class="w3-text-brown"> {{ forloop.counter }}. {{ survey.survey_title }}
+                        <span class="pull-right w3-small">
+                            <a class="w3-text-teal badge"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                            <a class="w3-btn-floating w3-green w3-text-white w3-small"
+                                href="{%  url 'survey:get_survey_analysis' survey_id=survey.survey_id%}"
+                                data-toggle="tooltip"
+                                title="Survey analysis">
+                                <i class="fa fa-line-chart"></i>
+                            </a>
+                            &nbsp;&nbsp;&nbsp;
+                            <a class="w3-btn-floating w3-teal w3-text-white w3-small ctrl-broadcast-survey"
+                                data-value="{{ survey.survey_id }}"
+                                data-toggle="tooltip"
+                                title="Broadcast survey">
+                                <i class="fa fa-send-o"></i>
+                            </a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <a class="w3-btn-floating w3-red w3-text-white w3-small ctrl-delete-survey"
+                               data-value="{{ survey.survey_id }}"
+                               data-toggle="tooltip"
+                               title="Delete survey">
+                               <i class="fa fa-times"></i>
+                            </a>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                        </span>
+                        </h4>
+                        <br>
+                    </div>
+
+
+                    <p class="w3-text-black w3-padding">
+                         {{ survey.survey_desc }}
+                    </p>
+
+                    {% for question  in survey.questions_obj %}
+                        <div class="w3-container">
+                            <h5 class="w3-text-black">
+                                {{ forloop.counter }}. {{ question.question }}
+                            </h5>
+                            <ul class="w3-text-blue">
+                                {% for option  in question.options %}
+                                    <li class="w3-hover-sand w3-padding">
+                                        {{ option.option }}
+                                        &nbsp;&nbsp;&nbsp;
+                                        <span class="badge pull-right">{{ option.response_count }} Response(s)</span>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+                <br>
+            {% endfor %}
+        {% else %}
+            <div class="w3-container w3-card-2 w3-padding-bottom">
+                <br>
+                <p>
+                    You have not created any survey yet. Click on the button below to published a survey.
+                </p>
+                <a class="w3-btn w3-blue-gray" href="{% url 'survey:new_survey_form' %}"><i class="fa fa-clipboard"></i> Publish a new survey</a>
+            </div>
+        {% endif %}
+   </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        $(document).on('click', '.ctrl-broadcast-survey', function(e){
+            e.preventDefault();
+            var SURVEY_ID = $(this).data('value');
+            var upload_form = '<div>'
+                +' <form class="w3-form w3-container" id="password-form">'
+                +' <input class="w3-input w3-text-blue" type="password" placeholder="Password" id="password" >'
+                +' <span class="w3-text-red" id="password-response"></span>'
+                +' <br>'
+                +' <span class="w3-text-green" id="srv-response"></span>'
+                +' <br>'
+                +' <a id="btn-broadcast-survey" class="w3-btn w3-text-white w3-blue-grey pull-right">Broadcast survey</a>'
+                +' </form>'
+                +'</div>';
+            $('#page-modal-dialog').addClass('modal-width-20');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Confirm that you want to send survey');
+            $('#page-modal').modal('show');
+
+            $(document).on('click', '#btn-broadcast-survey', function(e){
+                e.preventDefault();
+
+                $('#btn-broadcast-survey').prop('disabled', true);
+                $('#password-response').html('');
+                $('#srv-response').html('');
+                var password = $('#password').val();
+
+                if(password.length < 8){
+                    $('#btn-broadcast-survey').prop('disabled', false);
+                    $('#password').addClass('input-error');
+                    return;
+                }
+                else{
+                    $('#password').removeClass('input-error');
+                }
+                var data = {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    survey_id: SURVEY_ID,
+                    password: password
+                };
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'survey:broadcast_survey' %}",
+                    data: data,
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-broadcast-survey').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '1'){
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#password-form').trigger('reset');
+
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 5500);
+
+                        }else{
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-broadcast-survey')
+                            .html('Send survey')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-broadcast-survey')
+                        .html('Send survey')
+                        .prop('disabled', false);
+                });
+
+            });
+
+        });
+
+        $(document).on('click', '.ctrl-delete-survey', function(e){
+            e.preventDefault();
+            var SURVEY_ID = $(this).data('value');
+            var upload_form = '<div>'
+                +' <form class="w3-form w3-container" id="password-form">'
+                +' <input class="w3-input w3-text-blue" type="password" placeholder="Password" id="password" >'
+                +' <span id="password-response"></span>'
+                +' <br>'
+                +' <span class="w3-text-green" id="srv-response"></span>'
+                +' <a id="btn-delete-survey" class="w3-btn w3-text-white w3-blue-grey pull-right">Delete survey</a>'
+                +' </form>'
+                +'</div>';
+
+            $('#page-modal-dialog').addClass('modal-width-20');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Confirm that you want to delete survey');
+            $('#page-modal').modal('show');
+
+            $(document).on('click', '#btn-delete-survey', function(e){
+                e.preventDefault();
+                $('#btn-delete-survey').prop('disabled', true);
+                var password = $('#password').val();
+
+                if(password.length < 8){
+                    $('#btn-delete-survey').prop('disabled', false);
+                    $('#password').addClass('input-error');
+                    return;
+                }
+                else{
+                    $('#password').removeClass('input-error');
+                }
+
+                var data = {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    survey_id: SURVEY_ID,
+                    password: password
+                };
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'survey:delete_survey' %}",
+                    data: data,
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-delete-survey').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '0'){
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                        else{
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#password-form').trigger('reset');
+                            $('#password-form').trigger('reset');
+                            $('#page-modal-header').html('System response');
+                            $('#page-modal-footer').html('');
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 1200);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-delete-survey')
+                            .html('Delete survey')
+                            .prop('disabled', false);
+                    }
+                });
+
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-delete-survey')
+                        .html('Delete survey')
+                        .prop('disabled', false);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
+
+
+
+

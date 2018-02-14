@@ -1,0 +1,259 @@
+{% load staticfiles %}
+{% load extratags %}
+{% load verbatim %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Brand Sense</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/w3css/w3.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/font-awesome/css/font-awesome.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.css' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/LuminoStyles.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/styles.css' %}" />
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+                <img src="{% static "accounts/img/jubilee_logo.png" %}"
+                 alt="Profile pic"
+                 class="w3-padding-8"
+                 style="height: 70px; width: 70px;"/>
+                 <b>Tuko Pamoja</b>
+
+            </div>
+        </div>
+	</nav>
+
+    <div class="col-sm-10 col-sm-offset-1">
+        <br>
+
+        <div class="w3-container w3-grey">
+          <h4 class="w3-text-white">
+            <i class="fa fa-user"></i>&nbsp;&nbsp;&nbsp;Volunteer Registration( Register as {{user.user.first_name}} {{user.user.last_name}}'s volunteer )
+          </h4>
+        </div>
+         <form action=" " method="post"
+            enctype="multipart/form-data"
+            class="w3-container w3-white w3-padding-4 form-horizontal bordered"><br>
+             <br>
+            {% if messages %}
+            {% for message in messages %}
+                {{message.success}}
+                <div class="w3-large">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+             <div class="w3-container  w3-center">
+                 {% if user.profile_picture %}
+                    <img src="{{MEDIA_URL}}/{{user.profile_picture.url}}" alt="" style="width:80%;max-width:320px">
+                 {% endif %}
+                 {% if user.slogan %}
+                        <p class="w3-xxlarge w3-serif">{{user.slogan}}</p>
+                 {% endif %}
+             </div>
+             <div>
+                {% csrf_token %}
+                {% for field in form %}
+                {% if field.name|check_field_name%}
+                        <div class="col-lg-3 col-md-3 col-sm-3">
+                            <p>
+                                {% if field.label|check_label_name%}
+                                <label>{{field.label}}</label>
+                                {% else %}
+                                    <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                {% endif %}
+                                </br>
+                                {{field}}
+                            </p>
+                        </div>
+                {% else %}
+                    {% if forloop.counter|divisible_by_2 %}
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <p>
+                                    {% if field.label|check_label_name%}
+                                    <label>{{field.label}}</label>
+                                    {% else %}
+                                        <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                    {% endif %}
+                                    {{field}}
+                                </p>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="form-group row">
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <p>
+                                    {% if field.label|check_label_name%}
+                                    <label>{{field.label}}</label>
+                                    {% else %}
+                                        <label>{{field.label}}<span class="w3-text-red">*</span></label>
+                                    {% endif %}
+                                    {{field}}
+                                </p>
+                            </div>
+                    {% endif %}
+
+                {% endif %}
+                {% endfor %}
+                <div class="form-group row">
+                  <div class="col-lg-offset-6  col-md-offset-6 col-sm-offset-6
+                       col-lg-6  col-md-6 col-sm-6">
+                    <button type="submit" class="w3-btn w3-blue-gray pull-right" id="btn-register-volunteer">Register</button>
+                  </div>
+                </div>
+
+            </div>
+        </form>
+</div>
+
+    <div id="dynamic-content-holder"></div>
+
+    <div id="page-modal"
+		class="modal fade" role="dialog"
+		data-backdrop="static"
+		data-keyboard="false">
+        <div class="modal-dialog modal-width-60" id='page-modal-dialog'>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class=" pull-right cursor-pointer w3-text-red" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                    </a>
+                    <h4 id="page-modal-header" class="text-center w3-text-black">
+
+                    </h4>
+                </div>
+
+                <div class="modal-body" id="page-modal-body">
+
+                </div>
+                <div class="modal-footer" id="page-modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script src="{% static 'accounts/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/highcharts.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/modules/exporting.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/transition.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/moment.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.js' %}"></script>
+	<script src="{% static 'accounts/CustomJs/sidebar.js' %}"></script>
+    <script src="{% static 'accounts/formatter/jquery.formatter.min.js' %}"></script>
+
+    {% verbatim %}
+        <script>
+
+            $('.phone-formatted').formatter({
+              'pattern': '+254 7{{99}} {{999}} {{999}}',
+              'persistent': true
+            });
+        </script>
+    {% endverbatim %}
+
+    <script>
+        $('#anchor_redirect').on('click',function(e){
+            e.preventDefault();
+            window.location.href=$(this).attr('href');
+        })
+    </script>
+
+    <script>
+        $(document).on('focusout blur', '#id_phone_number',  function(e){
+            var temp_phone_number = $(this).val();
+            var phone_number = temp_phone_number.split(' ').join('');
+            if(phone_number.length < 13){
+                $('#id_phone_number').addClass('input-error'); errorExists = true;
+                }else{
+                $('#id_phone_number').removeClass('input-error');
+            }
+            $(this).val(phone_number);
+        })
+    </script>
+
+    <script>
+        $(document).on('focusout blur', '#id_email', function(e){
+            e.preventDefault();
+            var this_parent = $(this).parent();
+            var email_address = $('#id_email').val();
+             if(email_address.length < 4){
+                return;
+            }
+            var srvRqst = $.ajax({
+                url: '{% url "accounts:check_email_exists" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    email_address: email_address
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                   var responseObj = $.parseJSON(response);
+                   if(responseObj['STATUS'] === '1'){
+                      $('#id_email').addClass('input-error');
+                      $('#btn-register-volunteer').prop('disabled', true);
+                      try{$('#email-response').remove();}catch(exp){}
+                      this_parent.append('<span id="email-response" class="w3-text-red">Email address already exist</span>');
+                   }else{
+                         $('#id_email').removeClass('input-error');
+                         $('#btn-register-volunteer').prop('disabled', false);
+                         $('#email-response').remove();
+                   }
+                }
+                catch(exp){
+                    $('#id_email').removeClass('input-error');
+                }finally {}
+            });
+        });
+    </script>
+
+    <script>
+        $(document).on('focusout', '#id_password',  function(e){
+            e.preventDefault();
+            var password = $('#id_password').val();
+            var this_parent = $(this).parent();
+            if(password.length < 8){
+                $('#id_password').addClass('input-error');
+                try{$('#password-response').remove();}catch(exp){}
+                this_parent.append('<span id="password-response" class="w3-text-red">Password too short</span>');
+                }else{
+                $('#id_password').removeClass('input-error');
+                $('#password-response').remove();
+            }
+        });
+
+         $(document).on('focusout', '#id_confirm_password',  function(e){
+            e.preventDefault();
+            var password = $('#id_password').val();
+            var confirm_password = $('#id_confirm_password').val();
+            var this_parent = $(this).parent();
+            if(password !== confirm_password){
+                $('#id_confirm_password').addClass('input-error');
+                try{$('#confirm-password-response').remove();}catch(exp){}
+                this_parent.append('<span id="confirm-password-response" class="w3-text-red">Password mismatch</span>');
+                }else{
+                $('#id_confirm_password').removeClass('input-error');
+                $('#confirm-password-response').remove();
+            }
+        });
+    </script>
+
+
+</body>
+</html>

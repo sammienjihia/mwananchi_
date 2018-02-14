@@ -1,0 +1,97 @@
+
+{% load static %}
+{% block content %}
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="w3-panel w3-card-2">
+          <div class="border-bottom">
+            <h4>
+                <i class="fa fa-user-circle-o w3-text-cyan"></i>&nbsp;&nbsp;&nbsp; Clients
+            </h4>
+          </div>
+          <div class="panel-body w3-display-container" style="height: 250px;">
+            <div class="w3-display-middle w3-text-blue"
+                id="num-of-aspirants" style="font-size: 3em;">
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="col-lg-6">
+        <div class="w3-panel w3-card-2">
+           <div class="border-bottom">
+             <h4>
+               <i class="fa fa-users w3-text-teal"></i>&nbsp;&nbsp;&nbsp; SMS Subscribers
+             </h4>
+           </div>
+           <div class="panel-body w3-display-container" style="height: 250px;">
+             <div class="w3-display-middle w3-text-orange"
+               id="num-of-subscribers" style="font-size: 3em;">
+
+             </div>
+           </div>
+         </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="w3-panel w3-card-2">
+          <div class="border-bottom">
+            <h4>
+              <i class="fa fa-link w3-text-deep-orange"></i>&nbsp;&nbsp;&nbsp;Quick Links
+            </h4>
+          </div>
+
+          <div class="panel-body"
+               style="height: 250px;">
+            <div class="w3-row">
+                <div class="w3-col l6 m6 s6">
+                     <div class="panel ">
+                         <div class="panel-heading">
+                             <a href="{% url 'subscribers:subscribers_list' %}">Subscribers</a>
+                         </div>
+                     </div>
+                </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+
+    <script>
+        (function () {
+            var srvRqst  =$.ajax({
+                url: '{% url "site_admin:get_landing_page_data" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    $('#num-of-volunteers').html(
+                        parseFloat(responseObj['num_of_volunteers']).toLocaleString());
+                    $('#num-of-aspirants').html(
+                        parseFloat(responseObj['num_of_aspirants']).toLocaleString());
+                    $('#num-of-subscribers').html(
+                        parseFloat(responseObj['num_of_subscribers']).toLocaleString());
+                }catch(exp){
+
+                }finally {
+
+                }
+            });
+            srvRqst.fail(function (jHQR, errMsg, errThrown) {});
+        })();
+    </script>
+{% endblock %}

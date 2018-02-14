@@ -1,0 +1,10 @@
+{% extends 'accounts/base_app.html' %}
+{% block content %}
+    {% if request.user.is_superuser == True and  request.user.is_staff  == True %}
+            {% include 'accounts/landing_page_admin.html' %}
+        {% elif  request.user.is_superuser == False and  request.user.is_staff  == True%}
+            {% include 'accounts/landing_page_client.html' %}
+        {% elif request.user.is_superuser == False and  request.user.is_staff  == False %}
+            {% include 'accounts/landing_page_volunteer.html' %}
+        {% endif %}
+{% endblock %}

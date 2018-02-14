@@ -1,0 +1,76 @@
+{% extends 'accounts/base_app.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+        <div class="w3-container">
+            <h4 class="w3-center w3-text-blue">List of volunteers</h4>
+
+             <div class="tab-pane fade in" id="inbox-container">
+                    {% if volunteers %}
+                        <span>
+                            <a class="pull-right w3-text-blue" href="{% url 'volunteer:download_all_volunteers' %}">
+                                <i class="fa fa-file-excel-o w3-text-green"></i> Download volunteers list
+                            </a>
+                        </span>
+                        <table class="w3-table w3-striped w3-small">
+                            <thead class="w3-grey w3-text-white">
+                                <tr>
+                                    <th></th>
+                                    <th>Full name</th>
+                                    <th>Phone number</th>
+                                    <th>Email address</th>
+                                    <th>County</th>
+                                    <th>Constituency</th>
+                                    <th>Ward</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for volunteer in volunteers%}
+                                <tr class="w3-hover-teal cursor-pointer" data-href="#">
+                                    <td>
+                                        {{forloop.counter | add:currentOffset}}
+                                    </td>
+                                    <td>{{volunteer.user.first_name}}&nbsp;{{volunteer.user.last_name}}</td>
+                                    <td>{{volunteer.phone_number}}</td>
+                                    <td>{{volunteer.user.email}}</td>
+                                    <td>{{volunteer.county.county_name}}</td>
+                                    <td>{{volunteer.constituency.constituency_name}}</td>
+                                    <td>{{volunteer.ward.ward_name}}</td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="w3-row">
+                            <span class="pull-right">
+                                <a class="w3-btn w3-blue-gray"
+                                    href="{% url 'volunteer:volunteer_list' offset=prevOffset %}">
+                                    <i class="fa fa-angle-double-left"></i>
+                                </a>
+                                <a class="w3-btn w3-blue-gray"
+                                     href="{% url 'volunteer:volunteer_list' offset=nextOffset %}">
+                                    <i class="fa fa-angle-double-right"></i>
+                                </a>
+                            </span>
+                        </div>
+
+                        {% else %}
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    <span class="text-center">There are no volunteers.</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                </div>
+
+
+            </div>
+
+
+{% endblock %}
+{% block extrahead %}
+
+{% endblock %}

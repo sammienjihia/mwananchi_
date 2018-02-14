@@ -1,0 +1,398 @@
+{% extends 'accounts/landing.html'%}
+{% block content %}
+   <div class="w3-container">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#tweets-container">
+                    <i class="fa fa-twitter w3-text-blue"></i> Tweets
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#analysis-container" id="analysis-container-tab">
+                    <i class="fa fa-line-chart w3-text-red"></i> Twitter analysis
+                </a>
+            </li>
+        </ul>
+
+         <div class="tab-content">
+            <div class="tab-pane fade in active" id="tweets-container">
+                <div class="w3-row">
+                    <form action="{% url 'twitter:tweet_search'  %}" method="post">
+                        {% csrf_token %}
+                        <div class="w3-col l2 m2 s2 w3-margin-right">
+                            <select name="sentiment">
+                                <option value="">Select sentiment</option>
+                                <option value="NEGATIVE">Negative</option>
+                                <option value="POSITIVE">Positive</option>
+                                <option value="NEUTRAL">Neutral</option>
+                            </select>
+                        </div>
+                        <div class="w3-col l3 m3 s3 w3-margin-right">
+                            <input type="text"
+                                   name="key_word"
+                                   class="w3-input"
+                                   placeholder="Key word">
+                            <input type="hidden"
+                                   name="filter_data"
+                                   value="filter_data">
+                        </div>
+                        <div class="w3-col l1 m1 sm1 w3-margin-right">
+                            <button type="submit" class="w3-btn w3-blue-gray">
+                                <i class="fa fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <br>
+                {%  if tweets %}
+                    {% for tweet in tweets %}
+                         <div class="w3-container w3-hover-light-grey">
+                            <div class="border-bottom-dotted">
+                                <h5 class="w3-text-blue">
+                                    {{ tweet.author }}
+                                    <span class="pull-right w3-small">
+                                        <i class="fa fa-retweet"></i> &nbsp;&nbsp; {{ tweet.retweet }} &nbsp;&nbsp;<span class="w3-text-black">|</span>&nbsp;&nbsp;
+                                        <i class="fa fa-thumbs-o-up"></i> &nbsp;&nbsp; {{ tweet.favourite }} &nbsp;&nbsp;<span class="w3-text-black">|</span>&nbsp;&nbsp;
+                                        <i class="fa fa fa-users"></i>&nbsp;&nbsp; {{ tweet.followers }} &nbsp;&nbsp;<span class="w3-text-black">|</span>&nbsp;&nbsp;
+                                            {{ tweet.date | date:"d M Y g:i:s a" }} &nbsp;&nbsp;
+                                    </span>
+                                </h5>
+                            </div>
+                            <span class="pull-left">
+                                {% if tweet.tweet_sentiment  == 'POSITIVE'%}
+                                    <span class="w3-small w3-text-green">
+                                        <i class="fa fa-plus-circle w3-text-green"></i> Positive [{{ tweet.polarity }}]
+                                    </span>
+                                {% elif tweet.tweet_sentiment == 'NEGATIVE' %}
+                                     <span class="w3-small w3-text-red">
+                                         <i class="fa fa-minus-circle w3-text-red"></i> Negative [{{ tweet.polarity }}]
+                                      </span>
+                                {% else %}
+                                     <span class="w3-small w3-text-blue">
+                                         <i class="fa fa-hand-stop-o w3-text-blue"></i> Neutral [{{ tweet.polarity }}]
+                                     </span>
+                                {% endif %}
+                            </span>
+                            <br>
+                             <a style="text-decoration:none;" href={{ tweet.tweet_url }} >
+                                <p class="w3-text-black w3-padding">
+                                    {{ tweet.text }}
+                                </p>
+                             </a>
+                        </div>
+                        <br>
+                    {% endfor %}
+                {% else %}
+
+                {% endif %}
+            </div>
+            <div class="tab-pane fade" id="analysis-container">
+                <div class="w3-container w3-card-2">
+                   <div class="border-bottom-dotted w3-padding">
+                       <h4 class="w3-left w3-text-blue">Sentiment Analysis</h4>
+                       <br>
+                   </div>
+                   <div style="height: 400px;" id="twitter-sentiment-analysis-chart-div"></div>
+                </div>
+                <br>
+                <div class="w3-container w3-card-2">
+                   <div class="border-bottom-dotted w3-padding">
+                       <h4 class="w3-left w3-text-blue">Frequent word count analysis</h4>
+                       <br>
+                       <div class="w3-row-padding">
+                          <br>
+                          <span class="w3-padding">
+                                Number of words [<span id="num-of-words">5</span>]
+                          </span>
+                          <br>
+                          <br>
+                         <div class="w3-center" id="num-of-words-slider" style="width: 50%;"></div>
+                       </div>
+                   </div>
+                    <div class="w3-container">
+                       <div style="height: 400px;" id="word-count-frequency-div"></div>
+                    </div>
+                </div>
+                <br>
+                <div class="w3-container w3-card-2">
+                   <div class="border-bottom-dotted w3-padding">
+                       <h4 class="w3-left w3-text-blue">Tweets by region</h4>
+                       <br>
+                   </div>
+                   <div style="height: 400px;" id="twitter-sentiment-analysis-tweets-location-div"></div>
+                </div>
+                <br>
+{#                <div class="w3-container w3-card-2">#}
+{#                   <div class="border-bottom-dotted w3-padding">#}
+{#                       <h4 class="w3-left w3-text-blue">Sentiments by region</h4>#}
+{#                       <br>#}
+{#                   </div>#}
+{#                   <div style="height: 400px;" id="twitter-sentiment-analysis-location-div"></div>#}
+{#                </div>#}
+
+            </div>
+        </div>
+   </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        (function () {
+             GetFrequentWords(5);
+            //On selecting number of words
+            $('#num-of-words-slider').slider({
+                animate:"slow",
+                orientation: "horizontal",
+                min: 5,
+                step: 1,
+                max: 50,
+                slide: function(e, ui){
+                    var num_of_words = $(this).slider( "option", "value" );
+                    $('#num-of-words').html(num_of_words);
+                    GetFrequentWords(num_of_words);
+                }
+            });
+        })();
+
+        (function(){
+             var srvRqst = $.ajax({
+                url: "{% url 'twitter:get_sentiment_analysis' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['sentiment']);
+                        data.push(parseFloat(responseObj[i]['count']));
+                      }
+                      PlotSentimentAnalysis(categories, data);
+                }catch(ex){}finally {}
+            });
+
+            var tweetsByRegion = $.ajax({
+                  url: "{% url 'twitter:get_tweets_by_region_analysis' %}",
+                  data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  type: 'post',
+                  datatype: 'json'
+                });
+            tweetsByRegion.done(function(response){
+                  try{
+                    var responseObj = $.parseJSON(response);
+                    console.log(responseObj);
+                    var graphData = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                      graphData.push({
+                        name: responseObj[i]['region'],
+                        y: parseFloat(responseObj[i]['count'])
+                      });
+                    }
+                    console.log(graphData);
+                  ChartTweetsByRegion(graphData);
+                  }catch(exp){}
+                });
+        })();
+
+        function GetFrequentWords(num_of_words){
+            var srvRqst = $.ajax({
+                url: "{% url 'twitter:get_num_of_words' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    num_of_words : num_of_words
+                  },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function (response) {
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['word']);
+                        data.push(parseFloat(responseObj[i]['count']));
+                      }
+                      PlotWordCount(categories, data);
+                }catch(ex){}finally {}
+            });
+        }
+
+         function PlotWordCount(categories, data){
+              Highcharts.chart('word-count-frequency-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Word frequency in tweets'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Word frequncy count',
+                        data: data
+                    }]
+              });
+        }
+
+        function PlotSentimentAnalysis(categories, data){
+              Highcharts.chart('twitter-sentiment-analysis-chart-div', {
+                    chart: {
+                        type: 'column'
+                    },
+                    title: {
+                        text: 'Sentiment analysis in tweets'
+                    },
+                    xAxis: {
+                        categories: categories,
+                    },
+                    yAxis: {
+                        title: {
+                            text: 'Count'
+                        }
+                    },
+                    plotOptions: {
+                        line: {
+                            dataLabels: {
+                                enabled: true
+                            },
+                            enableMouseTracking: false
+                        }
+                    },
+                    series: [{
+                        name: 'Sentiment analysis',
+                        data: data
+                    }]
+              });
+        }
+    </script>
+
+
+    <!--Chart gender-->
+    <script>
+        function ChartTweetsByRegion(graphData){
+          Highcharts.chart('twitter-sentiment-analysis-tweets-location-div',
+          {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title:{
+              text: ' Tweets by region'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+              name: 'tweets',
+              colorByPoint: true,
+              data: graphData
+            }]
+          });
+        }
+    </script>
+
+    <script>
+        generateSentimentsByRegion();
+        function generateSentimentsByRegion(){
+            Highcharts.chart('twitter-sentiment-analysis-location-div', {
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: 'Sentiments by region'
+                },
+                xAxis: {
+                    categories: [
+                        'Jan',
+                        'Feb',
+                        'Mar',
+                        'Apr',
+                        'May',
+                        'Jun',
+                        'Jul',
+                        'Aug',
+                        'Sep',
+                        'Oct',
+                        'Nov',
+                        'Dec'
+                    ],
+                    crosshair: true
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Sentiments'
+                    }
+                },
+                tooltip: {
+                    headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                    pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+                        '<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+                    footerFormat: '</table>',
+                    shared: true,
+                    useHTML: true
+                },
+                plotOptions: {
+                    column: {
+                        pointPadding: 0.2,
+                        borderWidth: 0
+                    }
+                },
+                series: [{
+                    name: 'Tokyo',
+                    data: [49.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4]
+
+                }, {
+                    name: 'New York',
+                    data: [83.6, 78.8, 98.5, 93.4, 106.0, 84.5, 105.0, 104.3, 91.2, 83.5, 106.6, 92.3]
+
+                }, {
+                    name: 'London',
+                    data: [48.9, 38.8, 39.3, 41.4, 47.0, 48.3, 59.0, 59.6, 52.4, 65.2, 59.3, 51.2]
+
+                }, {
+                    name: 'Berlin',
+                    data: [42.4, 33.2, 34.5, 39.7, 52.6, 75.5, 57.4, 60.4, 47.6, 39.1, 46.8, 51.1]
+
+                }]
+            });
+        }
+    </script>
+{% endblock %}

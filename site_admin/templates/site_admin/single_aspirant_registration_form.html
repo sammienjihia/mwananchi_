@@ -1,0 +1,362 @@
+{% extends 'accounts/base_app.html' %}
+
+{% block content %}
+    <br>
+    <div class="w3-container">
+      <div class="w3-container w3-grey">
+        <h4 class="w3-text-white">
+          <i class="fa fa-user"></i>&nbsp;&nbsp;&nbsp;Add a new Client
+        </h4>
+      </div>
+      <div class="bordered-light-grey w3-container">
+        <form class="form-horizontal"
+              id='single-aspirant-reg-form'
+              name="single-aspirant-reg-form"
+              enctype="multipart/form-data">
+          <br>
+          <br>
+          <div class="form-group">
+            <div class="col-lg-6  col-md-6 col-sm-6">
+              <p>
+                <label>First name <span class="w3-text-red">*</span></label>
+                <input class="w3-input w3-text-blue"
+                  type="text"
+                  autofocus="autofocus"
+                  id="first-name"
+                  placeholder="First name">
+                <span id="first-name-response"></span>
+              </p>
+            </div>
+            <div class="col-lg-6  col-md-6 col-sm-6">
+              <p>
+                <label>Last name <span class="w3-text-red">*</span></label>
+                <input class="w3-input w3-text-blue"
+                  type="text"
+                  id="last-name"
+                  placeholder="Last name">
+                <span id="last-name-response" class="w3-text-red"></span>
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-6  col-md-6 col-sm-6">
+              <p>
+                <label>Email address <span class="w3-text-red">*</span></label>
+                <input class="w3-input w3-text-blue"
+                  type="email"
+                  id="email-address"
+                  placeholder="Email address">
+                <span id="email-address-response"></span>
+              </p>
+            </div>
+
+            <div class="col-lg-6  col-md-6 col-sm-6">
+              <p>
+                <label>Alias name  </label>
+                <input class="w3-input w3-text-blue"
+                  type="text"
+                  id="alias-name"
+                  placeholder="Alias name">
+                <span id="alias-name-response" class="w3-text-red"></span>
+              </p>
+            </div>
+          </div>
+
+          <div class="form-group">
+             <div class="col-lg-6  col-md-6 col-sm-6">
+              <p>
+                <label>Phone number</label>
+                <input class="w3-input w3-text-blue"
+                  type="text"
+                  id="phone-number"
+                  placeholder="Phone number">
+                <span id="phone-number-response" class="w3-text-red"></span>
+              </p>
+            </div>
+
+            <div class="col-lg-6  col-md-6 col-sm-6">
+              <label>County position<span class="w3-text-red">*</span></label>
+                <br>
+              <select id="seat">
+                  <option value="NULL">Select Post</option>
+                  {% for obj in seat_list %}
+                      <option value="{{ obj.id }}">{{ obj.seat_name }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-3  col-md-3 col-sm-3">
+             <p>
+                <label>Region <span class="w3-text-red">*</span></label>
+                <input class="w3-input w3-text-blue numeric-val"
+                  type="text"
+                  id="region-name"
+                  placeholder="Region">
+                <span id="national-id-response" class="w3-text-red"></span>
+              </p>
+            </div>
+            <div class="col-lg-3  col-md-3 col-sm-3">
+              <label>County<span class="w3-text-red">*</span></label>
+                <br>
+              <select id="county-id">
+                    <option value="NULL">Select County</option>
+                  {% for obj in county_list %}
+                      <option value="{{ obj.id }}">{{ obj.county_name }}</option>
+                  {% endfor %}
+              </select>
+            </div>
+            <div class="col-lg-3  col-md-3 col-sm-3">
+              <label>Constituency </label>
+              <br>
+              <select id="constituency-id">
+
+              </select>
+            </div>
+            <div class="col-lg-3  col-md-3 col-sm-3">
+              <label>Ward </label>
+                <br>
+              <select id="ward-id">
+
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="col-lg-offset-6  col-md-offset-6 col-sm-offset-6
+                 col-lg-6  col-md-6 col-sm-6">
+              <a class="w3-btn w3-blue-gray pull-right" id="btn-add-candidate">
+                <i class="fa fa-plus-circle"></i> Add candidate
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+
+    <script>
+        var EMAIL_EXISTS = true;
+        $(document).on('blur focusout', '#email-address', function (e) {
+            var email_address = $('#email-address').val();
+            email_address = email_address.trim();
+            if(email_address.length < 4){
+                return;
+            }
+
+            var srvRqst = $.ajax({
+                url: '{% url "accounts:check_email_exists" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    email_address: email_address
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                   var responseObj = $.parseJSON(response);
+                   if(responseObj['STATUS'] === '1'){
+                       EMAIL_EXISTS = true;
+                       $('#email-address-response').html('<span class="w3-text-red">Email address already exist.</span>');
+                   }else{
+                        EMAIL_EXISTS = false;
+                         $('#email-address-response').html('');
+                   }
+                }
+                catch(exp){
+                     EMAIL_EXISTS = false;
+                }finally {}
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).on('change', '#county-id', function(e){
+            e.preventDefault();
+
+            var srvRqst = $.ajax({
+                url: '{% url "site_admin:get_constituency_by_county" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    county_id: $('#county-id').val()
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var opts = '<option value="NULL">Select Constituency</option>';
+                    for (var i =0; i< responseObj.length; i++){
+                        opts += '<option value="'+responseObj[i]['id']+'">'
+                            + responseObj[i]['constituency_name']
+                            + '</option>';
+                    }
+                    $('#constituency-id').html(opts);
+                }catch(exp){}finally {}
+            });
+        });
+    </script>
+
+    <script>
+        $(document).on('change', '#constituency-id', function(e){
+            e.preventDefault();
+            var srvRqst = $.ajax({
+                url: '{% url "site_admin:get_ward_by_constituency" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    constituency_id: $('#constituency-id').val()
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var opts = '<option value="NULL">Select Ward</option>';
+                    for (var i =0; i< responseObj.length; i++){
+                        opts += '<option value="'+responseObj[i]['id']+'">'
+                            + responseObj[i]['ward_name']
+                            + '</option>';
+                    }
+                    $('#ward-id').html(opts);
+                }catch(exp){}finally {}
+            });
+        });
+    </script>
+
+    <script>
+        var ASPIRANT_DATA = {}
+        $(document).on('click', '#btn-add-candidate', function(e){
+            e.preventDefault();
+            $('#btn-add-candidate').prop('disabled', true);
+            var errorExists = false;
+            var first_name = $('#first-name').val();
+            if(first_name.length === 0){$('#first-name').addClass('input-error'); errorExists = true;}else{$('#first-name').removeClass('input-error');}
+            var last_name = $('#last-name').val();
+            if(last_name.length === 0){$('#last-name').addClass('input-error'); errorExists = true;}else{$('#last-name').removeClass('input-error');}
+            var email= $('#email-address').val();
+            if(email.length === 0){$('#email-address').addClass('input-error'); errorExists = true;}else{$('#email-address').removeClass('input-error');}
+            var alias_name = $('#alias-name').val();
+            var phone_number = $('#phone-number').val();
+            var seat = $('#seat').val();
+            if(seat == 'NULL'){$('#seat').addClass('input-error'); errorExists = true;}else{$('#seat').removeClass('input-error');}
+            var region_name = $('#region-name').val();
+            if(region_name.length === 0){$('#region-name').addClass('input-error'); errorExists = true;}else{$('#region-name').removeClass('input-error');}
+            var county_id = $('#county-id').val();
+            if(county_id == 'NULL'){$('#county-id').addClass('input-error'); errorExists = true;}else{$('#county-id').removeClass('input-error');}
+            var constituency_id  = $('#constituency-id').val();
+            var ward_id = $('#ward-id').val();
+            if(EMAIL_EXISTS === true){errorExists = true; $('#email-address').addClass('input-error');}else{ $('#email-address').removeClass('input-error');}
+            if(errorExists === true){
+                $('#btn-add-candidate').prop('disabled', false);
+                return
+            }else{
+                 $('#btn-add-candidate').prop('disabled', false);
+            }
+
+            var data = {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                first_name:first_name,
+                last_name:last_name,
+                email:email,
+                alias_name:alias_name,
+                phone_number:phone_number,
+                seat:seat,
+                region_name:region_name,
+                county_id:county_id,
+                constituency_id:constituency_id,
+                ward_id:ward_id
+            }
+            ASPIRANT_DATA = data;
+            var header = '<span>Confirm that you want to add this client</span>';
+
+            var body = '<div class="w3-container">'
+                +'<p>'
+                +'<label>Password </label>'
+                +'<input class="w3-input w3-text-blue"'
+                +'type="password"'
+                +'  id="password"'
+                +'  placeholder="Password">'
+                +'<span id="password-response" class="w3-text-red"></span>'
+                '+</p></div>';
+
+            var footer = '<a class="w3-btn w3-left w3-small w3-red w3-text-white" data-dismiss="modal">Cancel</a>'
+                +'<a class="w3-btn w3-right  w3-blue-grey w3-text-white"  id="confirm-add-aspirant">Confirm</a>';
+
+            $('#page-modal-header').html(header);
+            $('#page-modal-body').html(body);
+            $('#page-modal-footer').html(footer)
+            $('#page-modal').modal('show');
+
+        });
+
+        $(document).on('click', '#confirm-add-aspirant', function(e){
+            e.preventDefault();
+            $('#confirm-add-aspirant').prop('disabled', true);
+
+            var password = $('#password').val();
+
+            if(password.length < 8){
+                $('#password').addClass('input-error');
+                 $('#confirm-add-aspirant').prop('disabled', false);
+                return;
+            }else{
+                $('#password').removeClass('input-error');
+            }
+            ASPIRANT_DATA['password'] = password;
+            var srvRqst = $.ajax({
+                url: '{% url "site_admin:register_single_aspirant" %}',
+                data:ASPIRANT_DATA,
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function () {
+                    $('#page-modal-footer').html('<i class="fa fa-circle-o-notch fa-spin w3-text-deep-orange"></i> Loading...')
+                }
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '0'){
+                        $('#password-response').html(responseObj['MESSAGE'])
+                    }else{
+                        var msg = responseObj['MESSAGE'];
+                        var body = '<ul class="w3-ul">';
+
+                        for(var i=0; i< msg.length; i++){
+                            var icon = '';
+                            if(msg[i]['STATUS'] === '1') {
+                               icon = '<i class="fa fa-check-circle w3-text-green"></i>';
+                            }
+                            else{
+                               icon = '<i class="fa fa-times-circle w3-text-red"></i>';
+                            }
+                            body += '<li>'
+                            +   icon  +' '+ msg[i]['MESSAGE']
+                            +' </li>';
+                        }
+                        body += "</ul>";
+
+                        $('#page-modal-header').html('');
+                        $('#page-modal-body').html(body);
+                        $('#page-modal-footer').html('');
+
+                        $('#single-aspirant-reg-form').trigger('reset');
+                    }
+                }catch(exp){}finally {
+                     $('#confirm-add-aspirant').prop('disabled', false);
+                }
+            });
+            srvRqst.fail(function(jXHQR, errThrown, errMsg){
+                $('#confirm-add-aspirant').prop('disabled', false);
+            });
+        });
+    </script>
+{%  endblock %}

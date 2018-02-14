@@ -1,0 +1,247 @@
+{% load staticfiles %}
+    <div class="w3-container w3-center">
+        <h4 class="w3-text-blue">
+            <i class="fa fa-cog w3-text-brown"></i>&nbsp;&nbsp;System settings
+        </h4>
+    </div>
+
+    <div class="w3-margin">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab"
+                   id="social-media-settings-tab"
+                   href="#social-media-settings-container">
+                    <i class="fa fa-share-alt w3-text-blue"></i> Social media settings
+                </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab"
+                   class="active"
+                   id="account-settings-tab"
+                   href="#account-settings-container">
+                    <i class="fa fa-user-o w3-text-blue"></i> Account settings
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content w3-container">
+            <div class="tab-pane w3-card-2 active in"
+                 id="social-media-settings-container">
+                 {% if not twitter_account_set %}
+                     <form class="form-horizontal"
+                     id="social-media-settings-form"
+                     method="post">
+
+                      <br>
+                      <div class="w3-row w3-container">
+                        <h5 class="w3-text-blue">Twitter account settings</h5>
+                      </div>
+                      <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container border-bottom-dotted">
+                        <div>
+                          Have a Twitter Account? Then Authorize twitter.
+                        </div>
+                        <div>
+                          <br>
+                          <br>
+                          <a class="w3-btn w3-blue-gray"
+                             href="{% url 'accounts:authorize_twitter' %}">
+                            <i class="fa fa-twitter"></i>  Authorize twitter
+                          </a>
+                          <br>
+                          <br>
+                        </div>
+                    </div>
+                  </div>
+               </form>
+                 {% else %}
+                    <form class="form-horizontal"
+                     id="social-media-settings-form"
+                     method="post">
+
+                      <br>
+                      <div class="w3-row w3-container">
+                        <h5 class="w3-text-blue">Twitter account settings</h5>
+                      </div>
+                      <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container border-bottom-dotted">
+                        <div>
+                          You have already authorised twitter to read you profile.
+                          You may disconnect twitter by clicking on the button below.
+                        </div>
+                        <div>
+                          <br>
+                          <br>
+                          <a class="w3-btn w3-red cursor-pointer"
+                              id="btn-disconnect-twitter">
+                            <i class="fa fa-twitter"></i>  Disconnect twitter
+                          </a>
+                          <br>
+                          <br>
+                        </div>
+                    </div>
+                  </div>
+               </form>
+              {% endif %}
+            </div>
+
+
+            <div class="tab-pane fade w3-card-2"
+                 id="account-settings-container">
+                <form class="form-horizontal"
+                     id="edit-password-form"
+                     method="post">
+                   <div class="w3-container">
+                      <div class="w3-row">
+                          <div class="w3-container w3-col l6 m6 s6">
+                              <br>
+                                <h5 class="w3-text-blue">Change account password</h5>
+                              <br>
+                              <div class="form-group">
+                                  <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        Current password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="current-password"
+                                         placeholder="Current password">
+                                       <span id="current-password-response" class="w3-text-red"></span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        New password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="new-password"
+                                         placeholder="New password">
+                                       <span id="new-password-response" class="w3-text-red"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        Confirm password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="confirm-password"
+                                         placeholder="Confirm password">
+                                       <span id="confirm-password-response" class="w3-text-red"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group w3-container">
+                                <a class="w3-btn w3-blue-gray pull-right"
+                                   id="btn-change-password">
+                                    <i class="fa fa-key"></i> Change password
+                                </a>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  <br>
+                  <br>
+               </form>
+            </div>
+            <div class="tab-pane w3-card-2"
+                 id="subscriber-settings-container">
+                  <form class="form-horizontal"
+                     id="manifesto-title-form"
+                     method="post">
+                    <br>
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                            <div class="w3-row">
+                                <div class="w3-container w3-col l6 m6 s6">
+                                    <h5 class="w3-text-blue">Share subscribers contacts</h5>
+                                     <br>
+                                    <div>
+                                        <input class="w3-check"
+                                               type="checkbox"
+                                               id="mp"
+                                               value="mp"
+                                               checked="checked">
+                                        <label for="mp">MP</label>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <input class="w3-check"
+                                               id="gov"
+                                               type="checkbox">
+                                        <label for="gov">Governor</label>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <input class="w3-check"
+                                               id="sen"
+                                               type="checkbox">
+                                        <label for="sen">Senator</label>
+                                        &nbsp;&nbsp;&nbsp;
+                                        <input class="w3-check"
+                                               id="wrep"
+                                               type="checkbox">
+                                        <label for="wrep">Woman rep</label>
+                                    </div>
+
+                                    <br>
+
+                                    <div class="form-group w3-container">
+                                        <a class="w3-btn w3-blue-gray pull-left"
+                                           id="btn-share-contacts-title">
+                                            <i class="fa fa-share-alt"></i>&nbsp; Share contacts
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+               </form>
+            </div>
+        </div>
+    </div>
+
+{% block extrahead %}
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script>
+        $(document).on('click', '#btn-disconnect-twitter', function(e){
+            e.preventDefault();
+            var srvRqst = $.ajax({
+                url: "{% url 'accounts:disconnect_twitter_account' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '1'){
+                        window.location.reload();
+                    }
+                }catch(exp){}finally {}
+            });
+            srvRqst.fail(function (jxXHR, errMsg, errThrown) {
+
+            });
+        });
+    </script>
+{% endblock %}
+
+
+
+

@@ -1,0 +1,56 @@
+{% extends 'accounts/landing.html' %}
+
+{% block content %}
+    <div class="w3-card-2">
+        <div class="w3-container">
+            <h4 class="w3-text-blue">
+              <i class="fa fa-twitter pull-left"></i> List of trending tweets
+            </h4>
+        </div>
+        <div class="w3-container w3-padding">
+            {% if trends %}
+                {% for trend in trends %}
+                    <a class="badge w3-blue-gray w3-text-white"
+                        href="{% url 'twitter:search_tweet_from_hash_tag' hashtag=trend %}">
+                        {{ trend }}
+                    </a>&nbsp;&nbsp;
+                {% endfor %}
+            {% endif %}
+        </div>
+        <div class="w3-container">
+             {% if form.errors %}
+                 {% for error in form.non_field_errors %}
+                     <div >
+                         <strong>{{ error|escape }}</strong>
+                     </div>
+                 {% endfor %}
+             {% endif %}
+             <form class="w3-form"
+               action=" "
+               method="post"
+               enctype="multipart/form-data">
+                 <div class="form-group w3-row">
+                   <div class="w3-col l1 m1 s1">
+                    <br>
+                   </div>
+                 </div>
+
+                 <div>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <br>
+                    <br>
+                    <br>
+                    <div class="form-group">
+                      <button type="submit"
+                          class="w3-btn w3-blue-gray pull-left"
+                          value="{{ title }}"><i class="fa fa-search"></i> Search
+                      </button>
+                      <br>
+                      <br>
+                    </div>
+                 </div>
+             </form>
+        </div>
+    </div>
+{% endblock %}

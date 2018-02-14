@@ -1,0 +1,246 @@
+{% extends 'accounts/landing.html'%}
+{% block content %}
+   <div class="w3-container">
+       <h4 class="w3-text-brown w3-center"><u>Campaign Reception</u></h4>
+        {%  if manifesto %}
+             <div class="w3-container w3-card-2">
+                <div class="border-bottom-dotted">
+                    <h5 class="w3-text-blue">{{ manifesto.title }}</h5>
+                </div>
+                <div class="w3-container">
+                    <p class="pull-right w3-small">
+                       {{ manifesto.description }}
+                    </p>
+                </div>
+                <div style="height: 400px" id="manifesto-reception-div-chart">
+
+                </div>
+            </div>
+            <br>
+            <div>
+                {% for item  in manifesto_recipients_count %}
+                    <div class="w3-container">
+                        <h5 class="w3-text-blue">
+                            {{ forloop.counter }}. {{ item.manifesto_item }} <span class="w3-text-black">{{ item.count }} views</span>
+                        </h5>
+                        {% if item.count > 0 %}
+                        <div class="w3-row w3-card-2">
+                            <div class="w3-col l4 m4 s4"
+                                style="height: 350px;"
+                                id="manifesto-item-gender-graph-{{ item.item_id }}">
+
+                            </div>
+                            <div class="w3-col l4 m4 s4"
+                                style="height: 350px;"
+                                id="manifesto-item-age-graph-{{ item.item_id }}">
+
+                            </div>
+                            <div class="w3-col l4 m4 s4"
+                                style="height: 350px;"
+                                id="manifesto-item-ward-graph-{{ item.item_id }}">
+
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+            <br>
+        {% endif %}
+   </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        String.prototype.replaceAll = function(search, replacement) {
+            var target = this;
+            return target.split(search).join(replacement);
+        };
+
+        (function(){
+            var temp_data = '{{ manifesto_recipients_count }}';
+
+            var data = temp_data.replaceAll("&#39;", "\"");
+            data = data.replaceAll("&quot;", "\"");
+            data = data.replaceAll(": u", ':');
+
+            try{
+                var data_obj = $.parseJSON(data);
+                var categories = [];
+                var data = [];
+                for(var i = 0; i < data_obj.length; i++){
+                    var item_id = data_obj[i]['item_id']
+                    categories.push(data_obj[i]['manifesto_item']);
+                    data.push(parseFloat(data_obj[i]['count']));
+
+                    var gender_data = [];
+                    for(var j = 0; j < data_obj[i]['gender_analysis'].length; j++){
+                        gender_data.push({
+                        name: data_obj[i]['gender_analysis'][j]['gender'],
+                        y: parseFloat(data_obj[i]['gender_analysis'][j]['num'])
+                      });
+                    }
+                    if(gender_data.length>0){ChartGender(gender_data, item_id);}
+
+                    var age_categories = [];
+                    var age_data = [];
+
+                    for(var j = 0; j < data_obj[i]['age_analysis'].length; j++){
+                        age_categories.push(parseFloat(data_obj[i]['age_analysis'][j]['age']));
+                        age_data.push(parseFloat(data_obj[i]['age_analysis'][j]['num']));
+                    }
+                    if(age_categories.length>0){PlotRecipientAgeDistribution(age_categories, age_data, item_id);}
+
+                    var ward_categories = [];
+                    var ward_data = [];
+                    for(var j = 0; j < data_obj[i]['ward_analysis'].length; j++){
+                        ward_categories.push(data_obj[i]['ward_analysis'][j]['wardName']);
+                        ward_data.push(parseFloat(data_obj[i]['ward_analysis'][j]['num']));
+                    }
+                    if(ward_categories.length>0){ PlotRecipientsByWard(ward_categories, ward_data, item_id);}
+                }
+                PlotManifestoAnalysis(categories, data);
+            }catch(exp){
+                alert(exp)
+            }
+
+        })();
+
+        function  PlotManifestoAnalysis(categories, series){
+          Highcharts.chart('manifesto-reception-div-chart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: ' '
+            },
+            xAxis: {
+                categories: categories,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Count',
+                data: series
+
+            }]
+          });
+        }
+
+        function ChartGender(graphData, item_id){
+          Highcharts.chart('manifesto-item-gender-graph-'+item_id,
+          {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title:{
+              text: ' Recipients by gender'
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+              name: 'gender ',
+              colorByPoint: true,
+              data: graphData
+            }]
+          });
+        }
+
+        function PlotRecipientAgeDistribution(categories, data, item_id){
+              Highcharts.chart('manifesto-item-age-graph-'+item_id, {
+                chart: {
+                    type: 'spline'
+                },
+                title: {
+                    text: 'Recipients age distribution'
+                },
+                xAxis: {
+                    categories: categories
+                },
+                yAxis: {
+                    title: {
+                        text: 'Count'
+                    }
+                },
+                plotOptions: {
+                    line: {
+                        dataLabels: {
+                            enabled: true
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: 'Age curve',
+                    data: data
+                }]
+              });
+        }
+
+        function PlotRecipientsByWard(categories, series, item_id){
+            Highcharts.chart('manifesto-item-ward-graph-'+item_id, {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Recipients distribution by ward'
+            },
+            xAxis: {
+                categories: categories,
+                crosshair: true
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            plotOptions: {
+                column: {
+                    pointPadding: 0.2,
+                    borderWidth: 0
+                }
+            },
+            series: [{
+                name: 'Wards',
+                data: series
+
+            }]
+          });
+        }
+    </script>
+{% endblock %}
+
+
+
+
+

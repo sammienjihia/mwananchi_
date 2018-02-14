@@ -1,0 +1,28 @@
+{% extends 'email/email_template.html' %}
+
+{% block content %}
+    <p>
+        Dear {{user.first_name}}  {{user.last_name}}, you have successfully registered on the Mwananchi as a volunteer to {{user.volunteer.aspirant.user.first_name}} {{user.volunteer.aspirant.user.last_name}}.
+    </p>
+    <p>
+        Below are your details.
+    </p>
+    <table class="w3-table w3-striped w3-small">
+        <tr>
+            <th>Full name</th>
+            <td>{{user.first_name}}  {{user.last_name}}</td>
+        </tr>
+        <tr>
+            <th>Email address</th>
+            <td>{{user.email}}</td>
+        </tr>
+        <tr>
+            <th>Phone number</th>
+            <td>{{user.volunteer.phone_number}}</td>
+        </tr>
+        <tr>
+            <th>County</th>
+            <td>{{user.volunteer.county}}</td>
+        </tr>
+    </table>
+{% endblock %}

@@ -1,0 +1,48 @@
+<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+    <ul class="nav menu">
+        <li>&nbsp;</li>
+        <li>
+            <a class="w3-text-black cursor-pointer"
+               href="{% url 'accounts:landing_page' %}">
+                <i class="fa fa-home w3-text-teal"></i>&nbsp;&nbsp; Home
+            </a>
+        </li>
+
+        <li role="presentation" class="divider"></li>
+
+        <li class="parent">
+            <a data-toggle="collapse"
+               data-target="#subscribers-sub-menu"
+               class="w3-text-black cursor-pointer">
+              <i class="fa fa-users w3-text-blue"></i>
+              &nbsp; Clients
+            </a>
+            <ul class="children collapse"
+                id="subscribers-sub-menu">
+
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'site_admin:single_aspirant_registration_form' %}">
+                  <i class="fa fa-plus-circle w3-text-blue"></i>&nbsp; Add new client
+                </a>
+              </li>
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                    href="{% url 'site_admin:list_of_aspirants' offset='0' %}">
+                  <i class="fa fa-list w3-text-black"></i>&nbsp; List of clients
+                </a>
+              </li>
+            </ul>
+        </li>
+
+        <li>
+            <a class="w3-text-black cursor-pointer"
+               href="{% url 'subscribers:subscribers_list' %}">
+              <i class="fa fa-users w3-text-dark-gray"></i>
+              &nbsp; Subscribers
+            </a>
+        </li>
+
+    </ul>
+</div>
+

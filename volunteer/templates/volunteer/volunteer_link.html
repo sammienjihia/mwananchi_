@@ -1,0 +1,86 @@
+{% extends 'accounts/base_app.html' %}
+{% load staticfiles %}
+
+{% block content %}
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 w3-container w3-card-2 w3-padding-4">
+                <h4 class="w3-center w3-text-blue">Volunteer link</h4>
+                <p>
+                    Share the link below with intended volunteer. It shall direct them to a registration form.
+                </p>
+                <br>
+                [
+                    &nbsp;&nbsp;<a target="_blank" class="w3-text-blue"
+                      href="{{ protocol }}://{{ domain }}{% url 'volunteer:volunteer_link' uidb64=uid  token=token %}">
+                    {{ protocol }}://{{ domain }}{% url 'volunteer:volunteer_link' uidb64=uid  token=token %}
+                    </a> &nbsp;&nbsp;
+                ]
+                <br>
+                <br>
+                <a class="w3-btn-floating w3-teal"
+                   id="ctrl-share-link-on-twitter"
+                   data-toggle="tooltip"
+                   title="Share link on twitter"
+                   data-value="{{ protocol }}://{{ domain }}{% url 'subscribers:subscribe_link' uidb64=uid  token=token %}">
+                    <i class="fa fa-twitter"></i>
+                </a>
+                <br>
+            </div>
+        </div>
+{% endblock %}
+
+
+{% block extrahead %}
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script>
+        $('#ctrl-share-link-on-twitter').on('click', function(e){
+            var link = $(this).data('value');
+            var data = {
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                link: link
+            };
+            var srvRqst = $.ajax({
+                url: "{% url 'volunteer:share_link_on_twitter' %}",
+                data: data,
+                type: 'post',
+                dataType: 'json',
+                beforeSend: function(){
+                    $('#ctrl-share-link-on-twitter').html('<i class="fa fa-circle-o-notch fa-spin"></i>')
+                        .prop('disabled', true);
+                }
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = response;
+                    if(responseObj['STATUS'] ==='1'){
+                         $('#ctrl-share-link-on-twitter')
+                            .html('<i class="fa fa-check"></i>')
+                            .prop('disabled', true);
+                    }else{
+                         $('#ctrl-share-link-on-twitter')
+                             .html('<i class="fa fa-times"></i>')
+                             .prop('disabled', true);
+                    }
+                }catch(exp){
+
+                }finally {
+                    window.setTimeout(function(){
+                    $('#ctrl-share-link-on-twitter').html('<i class="fa fa-twitter"></i>')
+                        .prop('disabled', false);
+                    }, 1500);
+                }
+            });
+
+            srvRqst.fail(function(jqXHR, errMsg, errThrown){
+                $('#ctrl-share-link-on-twitter').html('<i class="fa fa-times"></i>')
+                        .prop('disabled', true);
+
+                window.setTimeout(function(){
+                    $('#ctrl-share-link-on-twitter').html('<i class="fa fa-twitter"></i>')
+                        .prop('disabled', false);
+                }, 1500);
+            });
+        });
+    </script>
+{% endblock  %}

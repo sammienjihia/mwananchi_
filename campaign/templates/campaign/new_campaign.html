@@ -1,0 +1,492 @@
+{% extends 'accounts/landing.html' %}
+
+{% block content %}
+
+    <div class="w3-container w3-center">
+        <h4 class="w3-text-blue"><u>Publish an SMS campaign</u></h4>
+    </div>
+
+    <div class="w3-margin">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab"
+                   class="active disabled-tab"
+                   id="manifesto-guidelines-tab"
+                   href="#manifesto-guidelines-container">
+                    <i class="fa fa-info-circle w3-text-blue"></i> Guidelines
+                </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                   id="manifesto-title-tab"
+                   href="#manifesto-title-container">
+                    <i class="fa fa-book w3-text-teal"></i> Campaign Setup
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                    id="manifesto-content-tab"
+                   href="#manifesto-content-container">
+                    <i class="fa fa-list w3-text-deep-orange"></i> Campaign Content
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                   id="approve-and-publish-tab"
+                   href="#approve-and-publish-container">
+                    <i class="fa fa-circle w3-text-green"></i> Approve & publish
+                </a>
+            </li>
+        </ul>
+
+        <!-- tab panes -->
+        <div class="tab-content w3-container">
+            <div class="tab-pane fade active in w3-card-2 w3-padding-4"
+                 id="manifesto-guidelines-container">
+                <br>
+                <p class="w3-padding-left">
+                    This campaign shall be accessed via sms. Keep the content short. 150 characters per item recommended.
+                </p>
+
+                <br>
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right show-next-tab"
+                           data-value="manifesto-title-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                  </div>
+            </div>
+
+            <div class="tab-pane fade in  w3-card-2" id="manifesto-title-container">
+                <br>
+                 <div class="w3-container">
+                   <a class="pull-left show-back-tab cursor-pointer"
+                       data-value="manifesto-guidelines-tab">
+                        <i class="fa fa-arrow-left"></i> Back
+                   </a>
+                 </div>
+
+               <form class="form-horizontal"
+                     id="manifesto-title-form"
+                     method="post">
+                  <br>
+                  <div class="w3-row">
+                    <h4 class="w3-text-blue w3-center">Campaign setup</h4>
+                  </div>
+
+                  <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                      <label for="first-name" class="w3-col l2 m2 s2">
+                        Language <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-rest">
+                        <select class="w3-input w3-text-blue"
+                          id="manifesto-language"
+                          placeholder="Manifesto title">
+                            <option value="NULL">Select language</option>
+                            {% for lan in languages %}
+                                <option value="{{ lan.id }}">{{ lan.name }}</option>
+                            {% endfor %}
+                         </select>
+                        <span id="manifesto-language-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+
+                    <div class="w3-container">
+                      <label for="first-name" class="w3-col l2 m2 s2">
+                        Campaign title <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-rest">
+                        <input type="text"
+                          class="w3-input w3-text-blue"
+                          id="manifesto-title"
+                          placeholder="Campaign title">
+                        <span id="manifesto-title-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right ctrl-move-next"
+                           id="btn-set-manifesto-title"
+                           data-value="manifesto-content-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                  </div>
+                  <br>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2" id="manifesto-content-container">
+                <form class="form-horizontal"
+                     id="manifesto-content-form"
+                     method="post">
+                  <br>
+                  <div class="w3-row">
+                      <div class="w3-container">
+                        <a class="w3-small ctrl-move-back w3-text-blue pull-left cursor-pointer"
+                            data-value="manifesto-title-tab">
+                          <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                      </div>
+
+                    <h4 class="w3-text-blue w3-center">Campaign content</h4>
+                  </div>
+                  <br>
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                      <label for="first-name" class="w3-col l2 m2 s2">
+                        Content title <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-col l5 m5 s5">
+                        <input type="text"
+                          class="w3-input w3-text-blue"
+                          id="content-title-0"
+                          placeholder="content title">
+                        <span id="content-title-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="w3-container border-bottom-dotted">
+                      <label class="w3-col l2 m2 s2">
+                        Content  <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-rest">
+                        <textarea
+                          rows="3"
+                          class="w3-input  w3-text-blue"
+                          id="content-0"
+                          placeholder="Content"></textarea>
+                        <span id="content-response" class="w3-text-red"></span>
+                        <br>
+                      </div>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="w3-container" id="more-manifesto-content-div">
+
+                  </div>
+
+                  <div class="w3-container">
+                     <a class="pull-left cursor-pointer" id="ctrl-add-manifesto-content">
+                         <i class="fa fa-plus-circle w3-text-blue"></i> Add content
+                     </a>
+                  </div>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right  ctrl-move-next"
+                           id="btn-get-manifesto-content"
+                           data-value="approve-and-publish-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                  </div>
+                   <br>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2" id="approve-and-publish-container">
+                <form class="form-horizontal"
+                     id="manifesto-approval-form"
+                     method="post">
+                    <br>
+                    <br>
+                    <div class="w3-container">
+                        <a class="w3-small ctrl-move-back w3-text-blue pull-left cursor-pointer"
+                        data-value="manifesto-content-tab">
+                        <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                    <div class="w3-container">
+                        <h4 class="w3-center w3-text-blue w3-large" id="val-manifesto-title"></h4>
+                    </div>
+                    <div id="display-manifesto-content" class="w3-container">
+
+                    </div>
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                          <label for="first-name" class="w3-col l2 m2 s2">
+                            Password <span class="w3-text-red">*</span>
+                          </label>
+                          <div class="w3-col l5 m5 s5">
+                            <input type="password"
+                              class="w3-input w3-text-blue"
+                              id="password"
+                              placeholder="Password">
+                            <span id="password-response" class="w3-text-red"></span>
+                          </div>
+                        </div>
+                    </div>
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                            <a class="w3-btn w3-blue-grey pull-right"
+                               id="btn-publish-manifesto">
+                                <i class="fa fa-circle w3-text-green"></i> Publish Campaign
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+
+        $(document).on('click', '.show-back-tab, .show-next-tab', function(e){
+           e.preventDefault();
+           var nextTab = $(this).data('value');
+           $('#'+nextTab).tab('show');
+        });
+
+
+        var CUR_INDEX = 0;
+        var INDEX_ARR = [0];
+        var MANIFESTO_DATA = {
+            manifestoTitle: '',
+            manifestoLanguage: '',
+            manifestoContent: [],
+            password: ''
+        }
+
+        $(document).on('click', '#ctrl-add-manifesto-content', function(e){
+            e.preventDefault();
+            CUR_INDEX++;
+            INDEX_ARR.push(CUR_INDEX);
+            var form = '<div>'
+              +'<a class="pull-right ctrl-remove-manifesto-item cursor-pointer" data-value="'+CUR_INDEX+'">'
+              +'<i class="fa fa-times-circle w3-text-red"></i>'
+              +'</a>'
+              +'<div class="w3-container">'
+              +'<label for="first-name" class="w3-col l2 m2 s2">'
+              +'  Content title <span class="w3-text-red">*</span>'
+              +'</label>'
+              +'<div class="w3-col l5 m5 s5">'
+              +'  <input type="text"'
+              +'    class="w3-input text w3-text-blue"'
+              +'    id="content-title-'+CUR_INDEX+'"'
+              +'    placeholder="content title">'
+              +'  <span id="content-title-'+CUR_INDEX+'-response" class="w3-text-red"></span>'
+              +'</div>'
+              +'</div>'
+              +'      <br>'
+              +'      <div class="w3-container border-bottom-dotted">'
+              +'         <label for="first-name" class="w3-col l2 m2 s2">'
+              +'           Content  <span class="w3-text-red">*</span>'
+              +'         </label>'
+              +'         <div class="w3-rest">'
+              +'           <textarea'
+              +'             rows="3"'
+              +'             class="w3-input w3-text-blue"'
+              +'             id="content-'+CUR_INDEX+'"'
+              +'             placeholder="Content"></textarea>'
+              +'           <span id="content-'+CUR_INDEX+'-response" class="w3-text-red"></span>'
+              +'<br>'
+              +'         </div>'
+              +'       </div>'
+              +'<br>'
+              +'</div>';
+            $('#more-manifesto-content-div').append(form);
+        });
+
+        $(document).on('click', '.ctrl-remove-manifesto-item', function(e){
+            e.preventDefault();
+            var index = $(this).data('value');
+            var i = INDEX_ARR.indexOf(parseInt(index));
+            if (i > -1) {
+                INDEX_ARR.splice(i, 1);
+            }
+            $(this).parent().remove();
+        });
+
+        $(document).on('click', '.ctrl-move-back', function(e){
+            e.preventDefault();
+            var selector_id = $(this).data('value');
+            $('#'+selector_id).tab('show');
+        });
+
+        //Get the manifesto title
+        $(document).on('click', '#btn-set-manifesto-title', function(e){
+            e.preventDefault();
+            var nextTab = $(this).data('value');
+            var manifestoLanguage = $('#manifesto-language').val();
+            var manifestoTitle = $('#manifesto-title').val();
+            manifestoTitle = manifestoTitle.trim();
+
+            var errorExists = false;
+
+            if(manifestoLanguage === 'NULL'){
+                $('#manifesto-language').addClass('input-error');
+                errorExists = true;
+            }else{
+                $('#manifesto-language').removeClass('input-error');
+            }
+
+
+            if(manifestoTitle.length <3){
+                $('#manifesto-title').addClass('input-error');
+                errorExists = true;
+            }else{
+                $('#manifesto-title').removeClass('input-error');
+            }
+
+            if(errorExists === false){
+                MANIFESTO_DATA.manifestoLanguage = manifestoLanguage;
+                MANIFESTO_DATA.manifestoTitle = manifestoTitle;
+                $('#'+nextTab).tab('show');
+            }else{return;}
+        });
+
+        //Get manifesto content
+
+        $(document).on('click', '#btn-get-manifesto-content', function(e){
+            var nextTab = $(this).data('value');
+            var  errorExists = false;
+
+            MANIFESTO_DATA.manifestoContent.length =0;
+
+            for (var i = 0; i < INDEX_ARR.length; i++) {
+                var contentTitle = $('#content-title-' + INDEX_ARR[i]).val();
+                contentTitle = contentTitle.trim();
+                var content = $('#content-' + INDEX_ARR[i]).val();
+                content = content.trim();
+
+                if (contentTitle.length < 3) {
+                    errorExists = true;
+                    $('#content-title-' + INDEX_ARR[i]).addClass('input-error');
+                } else {
+                    $('#content-title-' + INDEX_ARR[i]).removeClass('input-error');
+                }
+
+                if (content.length < 3) {
+                    errorExists = true;
+                    $('#content-' + INDEX_ARR[i]).addClass('input-error');
+                } else {
+                    $('#content-' + INDEX_ARR[i]).removeClass('input-error');
+                }
+
+                MANIFESTO_DATA.manifestoContent.push({
+                    contentTitle:contentTitle,
+                    content:content
+                });
+            }
+
+            if(errorExists === true){
+                return;
+            }else{
+
+                DisplayManifesto();
+                $('#'+nextTab).tab('show');
+            }
+        });
+
+        $(document).on('click', '#btn-publish-manifesto', function(e){
+            e.preventDefault();
+            $('#btn-publish-manifesto').prop('disabled', true);
+            var password = $('#password').val();
+            if(password.length < 8){
+                $('#btn-publish-manifesto').prop('disabled', false);
+                $('#password').addClass('input-error');
+                return;
+            }else{
+                 $('#password').removeClass('input-error');
+            }
+            MANIFESTO_DATA.password = password;
+            var srvRqst = $.ajax({
+                url: "{% url 'campaign:publish_new_manifesto' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    manifestoTitle: MANIFESTO_DATA.manifestoTitle,
+                    manifestoLanguage: MANIFESTO_DATA.manifestoLanguage,
+                    password: MANIFESTO_DATA.password,
+                    manifestoContent: JSON.stringify(MANIFESTO_DATA.manifestoContent)
+                },
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function(){
+                    $('#btn-publish-manifesto').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                }
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '0'){
+                        $('#password-response').html(responseObj['MESSAGE'])
+                    }else{
+                        var html = '<ul class="w3-ul">';
+                        var msgObj = responseObj['MESSAGE'];
+                        for(var i=0; i< msgObj.length; i++){
+                            var icon = '';
+                            if(msgObj[i]['STATUS'] === '1'){
+                                icon = '<i class="fa fa-circle w3-text-green"></i>';
+                            }else{
+                            icon = '<i class="fa fa-circle w3-text-red"></i>';
+                            }
+                            html += '<li>['+(i+1)+']'+icon+' '+msgObj[i]['MESSAGE']+'</li>';
+                        }
+                        html += '</ul>';
+                        $('#page-modal-header').html('');
+                        $('#page-modal-body').html(html);
+                        $('#page-modal-footer').html('');
+                        $('#page-modal').modal('show');
+
+                        $('#manifesto-title-form').trigger('reset');
+                        $('#manifesto-content-form').trigger('reset');
+                        $('#more-manifesto-content-div').html('');
+                        $('#manifesto-guidelines-tab').tab('show');
+                        ResetManifestoContent();
+                    }
+                }catch(exp){
+
+                }finally{
+                     $('#btn-publish-manifesto').html('<i class="fa fa-circle w3-text-green"></i> Publish campaign').prop('disabled', false);
+                }
+            });
+
+            srvRqst.fail(function(xJHQR, errThrown, errMsg){
+                $('#btn-publish-manifesto').html('<i class="fa fa-circle w3-text-green"></i> Publish campaign').prop('disabled', false);
+            });
+        });
+
+        function DisplayManifesto(){
+            $('#val-manifesto-title').val(MANIFESTO_DATA.manifestoTitle);
+            var manifestoContent = '';
+            for(var i=0; i< MANIFESTO_DATA.manifestoContent.length; i++){
+                var manaifestoContent = MANIFESTO_DATA.manifestoContent[i];
+
+                manifestoContent += '<div class="w3-container">'
+                    +'<h5 class="w3-text-blue">'+manaifestoContent['contentTitle']+'</h5>'
+
+                    +'<p>'+manaifestoContent['content']+'</p>'
+                    +'</div><br>';
+            }
+
+            $('#display-manifesto-content').html(manifestoContent);
+        }
+
+        function ResetManifestoContent(){
+            MANIFESTO_DATA.manifestoContent.length = 0;
+            MANIFESTO_DATA.manifestoLanguage = '';
+            MANIFESTO_DATA.manifestoTitle = '';
+            MANIFESTO_DATA.password = '';
+        }
+    </script>
+{% endblock %}
+

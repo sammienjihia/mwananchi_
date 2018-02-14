@@ -1,0 +1,97 @@
+{% extends 'accounts/landing.html'%}
+{% block content %}
+   <div class="w3-container">
+        {%  if survey %}
+             <div class="w3-container w3-card-2">
+                <div class="border-bottom-dotted">
+                    <h4 class="w3-text-brown"> Analysis for {{ survey.survey_title }}
+                    <span class="pull-right w3-small">
+                        <a class="w3-text-teal badge"></a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    </span>
+                    </h4>
+                </div>
+
+                {% for question  in survey.questions_obj %}
+                    <div class="w3-container">
+                        <h5 class="w3-text-black">
+                            {{ forloop.counter }}. {{ question.question }}
+                        </h5>
+                        <div class="border-bottom-dotted" style="height: 400px;" id="question_graph_{{ question.id }}">
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+        {% endif %}
+   </div>
+{% endblock %}
+{% block extrahead %}
+    <script>
+
+        String.prototype.replaceAll = function(search, replacement) {
+            var target = this;
+            return target.split(search).join(replacement);
+        };
+
+        (function(){
+            var temp_data = '{{ survey.chart_data }}';
+            var data = temp_data.replaceAll("&#39;", "\"");
+            data = data.replaceAll(": u", ':');
+            try{
+                var data_obj = $.parseJSON(data);
+                for(var i = 0; i < data_obj.length; i++){
+                    var categories = [];
+                    var data = [];
+                    var obj  = data_obj[i]['data'];
+
+                    for(j =0; j< obj.length; j++){
+                        categories.push(obj[j]['option']);
+                        data.push(parseFloat(obj[j]['count']));
+                    }
+                    PlotQuestionAnalysis(categories, data, data_obj[i]['question_id']);
+                }
+            }catch(exp){
+
+            }
+
+        })();
+
+    function  PlotQuestionAnalysis(categories, series, question_id){
+      Highcharts.chart('question_graph_'+question_id, {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: ' '
+        },
+        xAxis: {
+            categories: categories,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Count'
+            }
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Question options',
+            data: series
+
+        }]
+      });
+    }
+    </script>
+{% endblock %}
+
+
+
+
+

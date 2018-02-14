@@ -1,0 +1,129 @@
+<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+    <ul class="nav menu">
+        <li>&nbsp;</li>
+        <li>
+            <a class="w3-text-black cursor-pointer"
+               href="{% url 'accounts:landing_page' %}" >
+                <i class="fa fa-home w3-text-teal"></i>&nbsp;&nbsp; Home
+            </a>
+        </li>
+        <li role="presentation" class="divider"></li>
+
+        <li class="parent in">
+            <a data-toggle="collapse"
+               data-target="#social-media-sub-menu"
+               class="w3-text-black cursor-pointer">
+              <i class="fa fa-twitter w3-text-blue"></i>&nbsp;&nbsp; Twitter
+            </a>
+            <ul class="children collapse" id="social-media-sub-menu">
+                <li>
+{#                    <a class="w3-text-black cursor-pointer"#}
+{#                    href="{% url 'twitter:twitter_mentions' %}">#}
+{#                        <i class="fa fa-smile-o w3-text-blue"></i>&nbsp;&nbsp;Twitter mentions#}
+{#                    </a>#}
+                </li>
+                <li>
+                   <a class="w3-text-black cursor-pointer"
+                        href="{% url 'twitter:tweet_search' %}">
+                        <i class="fa fa-search w3-text-blue-gray"></i>&nbsp;&nbsp;Twitter search
+                    </a>
+                </li>
+            </ul>
+        </li>
+
+{#        <li class="parent">#}
+{#            <a data-toggle="collapse"#}
+{#               data-target="#surveys-sub-menu"#}
+{#               class="w3-text-black cursor-pointer">#}
+{#              <i class="fa fa-clipboard w3-text-green"></i>&nbsp;&nbsp;Survey#}
+{#            </a>#}
+{#            <ul  class="children collapse" id="surveys-sub-menu">#}
+{#              <li>#}
+{#                <a class="w3-text-black cursor-pointer" href="{% url 'survey:new_survey_form' %}" >#}
+{#                  <i class="fa fa-plus-circle w3-text-blue"></i>#}
+{#                   &nbsp; New survey#}
+{#                </a>#}
+{#              </li>#}
+{#              <li>#}
+{#                <a class="w3-text-black cursor-pointer"#}
+{#                   href="{% url 'survey:survey_listing_page' %}">#}
+{#                  <i class="fa fa-clock-o w3-text-brown"></i>#}
+{#                   &nbsp; Previous surveys#}
+{#                </a>#}
+{#              </li>#}
+{#            </ul>#}
+{#        </li>#}
+
+        <li role="presentation" class="divider"></li>
+        <li class="parent">
+            <a data-toggle="collapse"
+               data-target="#sms-sub-menu"
+               class="w3-text-black cursor-pointer">
+              <i class="fa fa-envelope-o w3-text-deep-orange"></i>&nbsp;&nbsp;SMS
+            </a>
+
+            <ul class="children collapse" id="sms-sub-menu">
+              <li>
+                <a class="w3-text-black cursor-pointer ctrl-get-sms-form">
+                  <i class="fa fa-pencil-square-o w3-text-blue"></i>&nbsp; New SMS
+                </a>
+              </li>
+
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'sms:outbox_list' %}">
+                  <i class="fa fa-external-link-square w3-text-teal"></i>&nbsp; Outbox
+                </a>
+              </li>
+
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'sms:inbox_list' %}">
+                  <i class="fa fa-envelope-open w3-text-teal"></i>&nbsp; Inbox
+                </a>
+              </li>
+
+            </ul>
+        </li>
+
+         <li>
+            <a class="w3-text-black cursor-pointer" href="{% url 'campaign:index' %}">
+              <i class="fa fa-book w3-text-green"></i>&nbsp;&nbsp;Campaign
+            </a>
+          </li>
+
+        <li role="presentation" class="divider"></li>
+
+        <li class="parent">
+            <a data-toggle="collapse"
+               data-target="#subscribers-sub-menu"
+               class="w3-text-black cursor-pointer">
+              <i class="fa fa-users w3-text-blue"></i>
+              &nbsp; Subscribers
+            </a>
+            <ul class="children collapse" id="subscribers-sub-menu">
+{#              <li>#}
+{#                <a class="w3-text-black cursor-pointer"#}
+{#                 href="{% url 'subscribers:batch_upload_subscribers_form' %}">#}
+{#                  <i class="fa fa-file-excel-o w3-text-green"></i>&nbsp; Batch upload subscribers#}
+{#                </a>#}
+{#              </li>#}
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'subscribers:get_share_subscription_link' %}">
+                  <i class="fa fa-share-alt w3-text-red"></i>&nbsp; Share subscribers link
+                </a>
+              </li>
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'subscribers:subscribers_list' offset=0 %}">
+                  <i class="fa fa-list w3-text-black"></i>&nbsp; List of subscribers
+                </a>
+              </li>
+
+            </ul>
+        </li>
+
+    </ul>
+</div>
+

@@ -1,0 +1,50 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+  <head>
+    <title>MWANANCHI</title>
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/bootstrap.min.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/font-awesome/css/font-awesome.min.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/w3css/w3.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/styles.css' %}" />
+  <style>
+      body{
+        margin-top: 70px;
+      }
+
+      #main-container{
+        background: url('{% static "accounts/img/bg_image.jpeg"%}');
+        opacity: 0.8;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin-top: 0px;
+        position: absolute;
+        z-index: -1;
+    }
+  </style>
+  </head>
+{% endblock %}
+  <body>
+    {% block content %}
+    <div class="w3-display-container" id="main-container">
+          <div class="w3-display-middle w3-text-white" style="font-size: 5em;">
+                Error 404
+          </div>
+        </div>
+    {% endblock %}
+    <div class="navbar-fixed-bottom text-center footer-div">
+      <small>
+        <small>
+          <a class=" w3-text-blue cursor-pointer"></a>
+        </small>
+      </small>
+    </div>
+  </body>
+</html>
+
+
+
+

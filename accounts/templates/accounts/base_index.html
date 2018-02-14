@@ -1,0 +1,76 @@
+{% load static %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+{% block head %}
+  <head>
+    <title>MWANANCHI</title>
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/bootstrap.min.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/font-awesome/css/font-awesome.min.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/w3css/w3.css' %}" />
+      <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/styles.css' %}" />
+  <style>
+      body{
+        margin-top: 70px;
+      }
+
+      #main-container{
+        background: url('{% static "accounts/img/bg_image.jpeg"%}');
+        opacity: 0.5;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin-top: 52px;
+        position: absolute;
+        z-index: -1;
+    }
+  </style>
+  </head>
+{% endblock %}
+{% block body %}
+  <body>
+      <nav class="navbar navbar-default navbar-fixed-top"
+        role="navigation">
+      <div class="navbar-header">
+        <button type="button"
+                class="navbar-toggle"
+                data-toggle="collapse"
+           data-target=".navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a href="{% url 'accounts:index' %}" class="navbar-brand cursor-pointer w3-text-black">
+           <img src="{% static "accounts/img/mwananchi-logo2.png" %}"
+             alt="Profile pic"
+             class="w3-padding-8"
+             style="height: 70px; width: 70px;"/>
+        </a>
+      </div>
+      <div class="collapse navbar-collapse">
+
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a class="cursor-pointer w3-text-black" href="{% url 'accounts:login_page' %}">
+               Log in
+            </a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    {% block content %}
+
+    {% endblock %}
+    <div class="navbar-fixed-bottom text-center footer-div">
+      <small>
+        <small>
+          <a class=" w3-text-blue cursor-pointer"></a>
+        </small>
+      </small>
+    </div>
+  </body>
+{% endblock %}
+</html>

@@ -1,0 +1,40 @@
+{% extends 'email/email_template.html' %}
+
+{% block content %}
+    {% if user.first_name%}
+    <p>
+        Dear {{user.first_name}}  {{user.last_name}}, you have successfully registered as {{user.volunteer.aspirant.user.first_name}} {{user.volunteer.aspirant.user.last_name}}'s volunteer.
+    </p>
+    {% else %}
+    <p>
+        Dear volunteer, you have successfully registered as {{user.volunteer.aspirant.user.first_name}} {{user.volunteer.aspirant.user.last_name}}'s volunteer.
+    </p>
+    {% endif %}
+    <p>
+        Below are your details.
+    </p>
+    <table class="w3-table w3-striped w3-small">
+        {% if user.first_name %}
+        <tr>
+            <th>Full name</th>
+            <td>{{user.first_name}}  {{user.last_name}}</td>
+        </tr>
+        {% endif %}
+        <tr>
+            <th>Email address</th>
+            <td>{{user.email}}</td>
+        </tr>
+        <tr>
+            <th>Phone number</th>
+            <td>{{user.volunteer.phone_number}}</td>
+        </tr>
+        {% if user.volunteer.county %}
+        <tr>
+            <th>County</th>
+            <td>{{user.volunteer.county}}</td>
+        </tr>
+        {% endif %}
+    </table>
+{% endblock %}
+
+

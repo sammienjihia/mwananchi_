@@ -1,0 +1,395 @@
+{% extends 'accounts/base_app.html' %}
+{% load staticfiles %}
+
+{% block content %}
+
+        <div class="w3-container">
+            <h4 class="w3-center w3-text-blue">List and analysis of subscribers</h4>
+            <ul class="nav nav-tabs">
+                 <li class="active">
+                    <a data-toggle="tab"
+                       href="#inbox-container">
+                        <i class="fa fa-users w3-text-blue"></i> Subscribers listing
+                    </a>
+                </li>
+
+                <li id="subscriber-analysis-tab">
+                    <a data-toggle="tab" href="#subscriber-analysis-container">
+                        <i class="fa fa-line-chart w3-text-light-green"></i> Analysis
+                    </a>
+                </li>
+            </ul>
+
+            <!-- tab panes -->
+            <div class="tab-content">
+             <div class="tab-pane fade in active" id="inbox-container">
+                    {% if subscribers %}
+                        <span>
+                            <a class="pull-right w3-text-blue" href="{% url 'subscribers:download_all_subscribers' %}">
+                                <i class="fa fa-file-excel-o w3-text-green"></i> Download subscribers list
+                            </a>
+                        </span>
+                        <table class="w3-table w3-striped w3-small">
+                            <thead class="w3-grey w3-text-white">
+                                <tr>
+                                    <th></th>
+                                    <th>Full name</th>
+                                    <th>Phone number</th>
+                                    <th>Email address</th>
+                                    <th>County</th>
+                                    <th>Constituency</th>
+                                    <th>Ward</th>
+                                    <th>Date registered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for subscriber in subscribers%}
+                                <tr class="w3-hover-teal cursor-pointer" data-href="#">
+                                    <td>
+                                        {{forloop.counter | add:currentOffset}}
+                                    </td>
+                                    <td>{{subscriber.first_name}}&nbsp;{{subscriber.last_name}}</td>
+                                    <td>{{subscriber.phone_number}}</td>
+                                    <td>{{subscriber.email_address}}</td>
+                                    <td>{{subscriber.county.county_name}}</td>
+                                    <td>{{subscriber.constituency.constituency_name}}</td>
+                                    <td>{{subscriber.ward.ward_name}}</td>
+                                    <td>{{subscriber.date }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+
+                        <div class="w3-row">
+                            <span class="pull-right">
+                                <a class="w3-btn w3-blue-gray"
+                                    href="{% url 'subscribers:subscribers_list' offset=prevOffset %}">
+                                    <i class="fa fa-angle-double-left"></i>
+                                </a>
+                                <a class="w3-btn w3-blue-gray"
+                                     href="{% url 'subscribers:subscribers_list' offset=nextOffset %}">
+                                    <i class="fa fa-angle-double-right"></i>
+                                </a>
+                            </span>
+                        </div>
+
+                        {% else %}
+                            <div class="list-group">
+                                <div class="list-group-item">
+                                    <span class="text-center">This tab folder is empty.</span>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                </div>
+             <div class="tab-pane fade in"
+                  id="subscriber-analysis-container">
+                    <div class="row">
+                      <div class="col-lg-5 col-md-5 col-sm-5">
+                        <div class="w3-panel w3-card-2">
+                          <div class="border-bottom">
+                            <h4>
+                              <i class="fa fa-male w3-text-blue"></i> <i class="fa fa-female w3-text-blue"></i>
+                              &nbsp;&nbsp;&nbsp; Subscribers by gender
+                              <span class="badge w3-blue-gray" id="num-of-members"></span>
+                            </h4>
+                          </div>
+
+                          <div class="panel-body "
+                               style="height: 400px;"
+                               id="subscriber-gender-chart-div">
+
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-7 col-md-7 col-sm-7 ">
+                        <div class="w3-panel w3-card-2">
+                          <div class="border-bottom">
+                            <h4>
+                              <i class="fa fa-genderless w3-text-cyan"></i>&nbsp;&nbsp;&nbsp; Subscribers by age
+                            </h4>
+                          </div>
+                          <div class="panel-body"
+                               style="height: 400px"
+                               id="subscriber-age-chart-div">
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="w3-panel w3-card-2">
+                          <div class="border-bottom">
+                            <h4>
+                              <i class="fa fa-map-o w3-text-blue w3-text-brown"></i>&nbsp;&nbsp;&nbsp; Subscribers distribution by wards
+                            </h4>
+                          </div>
+                          <div class="panel-body"
+                               style="height: 400px;"
+                               id="subscribers-by-ward-chart-div">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="row">
+                      <div class="col-lg-12">
+                        <div class="w3-panel w3-card-2">
+
+                          <div class="border-bottom">
+                            <h4>
+                              <i class="fa fa-map-marker w3-text-deep-orange"></i>&nbsp;&nbsp;&nbsp; Subscribers distribution by counties
+                            </h4>
+                          </div>
+                          <div class="panel-body"
+                               style="height: 400px;"
+                               id="subscribers-by-county-chart-div">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        $(document).on('click', '#subscriber-analysis-tab', function(e){
+            e.preventDefault();
+            window.setTimeout(function () {
+                var srvRqst = $.ajax({
+                  url: "{% url 'subscribers:subscriber_analysis_by_gender' %}",
+                  data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                  },
+                  type: 'post',
+                  datatype: 'json'
+                });
+                srvRqst.done(function(response){
+                  try{
+                    var responseObj = $.parseJSON(response);
+                    var graphData = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                      graphData.push({
+                        name: responseObj[i]['gender'],
+                        y: parseFloat(responseObj[i]['num'])
+                      });
+                    }
+                  ChartGender(graphData);
+                  }catch(exp){}
+                });
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'subscribers:subscriber_analysis_by_age' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                    type: 'post',
+                    datatype: 'json'
+                });
+                srvRqst.done(function(response){
+                  try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(parseFloat(responseObj[i]['age']));
+                        data.push(parseFloat(responseObj[i]['num']));
+                      }
+                      PlotMembersAgeDistribution(categories, data);
+                    }catch(exp){}
+               });
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'subscribers:subscriber_analysis_by_county' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                      },
+
+                    type: 'post',
+                    datatype: 'json'
+                  });
+                srvRqst.done(function(response){
+                  try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['countyName']);
+                        data.push(parseFloat(responseObj[i]['num']));
+                    }
+                    PlotSubscribersByCounty(categories, data);
+                    }catch(exp){}
+               });
+
+
+                 var srvRqst = $.ajax({
+                    url: "{% url 'subscribers:subscriber_analysis_by_ward' %}",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                      },
+
+                    type: 'post',
+                    datatype: 'json'
+                });
+                srvRqst.done(function(response){
+                  try{
+                    var responseObj = $.parseJSON(response);
+                    var categories = [];
+                    var data = [];
+                    for(var i = 0; i < responseObj.length; i++){
+                        categories.push(responseObj[i]['wardName']);
+                        data.push(parseFloat(responseObj[i]['num']));
+                    }
+                    PlotSubscribersByWard(categories, data);
+                    }catch(exp){}
+               });
+            }, 1000)
+        });
+    </script>
+
+
+  <!--Chart gender-->
+  <script>
+    function ChartGender(graphData){
+      Highcharts.chart('subscriber-gender-chart-div',
+      {
+        chart: {
+            plotBackgroundColor: null,
+            plotBorderWidth: null,
+            plotShadow: false,
+            type: 'pie'
+        },
+        title:{
+          text: ' Subscribers by gender'
+        },
+        tooltip: {
+            pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+        },
+        plotOptions: {
+            pie: {
+                allowPointSelect: true,
+                cursor: 'pointer',
+                dataLabels: {
+                    enabled: true,
+                    format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                    style: {
+                        color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                    }
+                }
+            }
+        },
+        series: [{
+          name: 'gender ',
+          colorByPoint: true,
+          data: graphData
+        }]
+      });
+    }
+  </script>
+
+  <!--Plot age distribution-->
+  <script>
+   function PlotMembersAgeDistribution(categories, data){
+      Highcharts.chart('subscriber-age-chart-div', {
+        chart: {
+            type: 'spline'
+        },
+        title: {
+            text: 'Subscribers age distribution'
+        },
+        xAxis: {
+            categories: categories
+        },
+        yAxis: {
+            title: {
+                text: 'Count'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: 'Age curve',
+            data: data
+        }]
+      });
+    }
+  </script>
+
+    <!--Plot members by county -->
+  <script>
+    function  PlotSubscribersByCounty(categories, series){
+      Highcharts.chart('subscribers-by-county-chart-div', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Subscribers distribution by county'
+        },
+        xAxis: {
+            categories: categories,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Count'
+            }
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Counties',
+            data: series
+
+        }]
+      });
+    }
+
+    function PlotSubscribersByWard(categories, series){
+        Highcharts.chart('subscribers-by-ward-chart-div', {
+        chart: {
+            type: 'column'
+        },
+        title: {
+            text: 'Subscribers distribution by ward'
+        },
+        xAxis: {
+            categories: categories,
+            crosshair: true
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: 'Count'
+            }
+        },
+        plotOptions: {
+            column: {
+                pointPadding: 0.2,
+                borderWidth: 0
+            }
+        },
+        series: [{
+            name: 'Wards',
+            data: series
+
+        }]
+      });
+    }
+  </script>
+{% endblock %}

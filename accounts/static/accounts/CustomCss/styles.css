@@ -1,0 +1,178 @@
+textarea{
+  resize: none;
+}
+
+label{
+    font-weight: normal;
+}
+
+.disabled-tab{
+    pointer-events: none;
+}
+
+.disabled-btn{
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+
+.bordererd-default{
+  border: #7AADFF solid 1px;
+}
+
+.cursor-pointer{
+  cursor: pointer;
+}
+
+.bg-grey{
+  background-color: #EAEAEA;
+}
+.bg-default{
+  background-color: #7AADFF;
+}
+
+.bg-orange{
+  background-color:  #F7941D;
+}
+
+.bordered{
+  border: #666363 1px solid;
+}
+.bordered-light-grey{
+    border: #D8D8D8 1px solid;
+}
+
+.border-bottom{
+  border-bottom: #666363 1px solid;
+}
+
+.border-bottom-dotted
+{
+    border-bottom: #666363 1px dotted;
+}
+
+
+.border-bottom-2px{
+   border-bottom: #666363 2px solid;
+}
+
+
+.sidebar{
+  background-color: #FFFFFF;
+  border-left: 1px solid #F7941D;
+}
+.inline-text-input{
+    border: none;
+    border-bottom: 1px solid #000000;
+    width: 30%;
+}
+
+#nav-logo-img{
+  background-color: #ffffff;
+  height:70px;
+}
+
+#top-nav-container{
+  border-bottom: #F7941D 2px solid;
+}
+
+.input-error{
+     border-bottom: #ff0000 2px solid;
+}
+/*------Custom W3 Classs --------------*/
+
+.w3-card{
+  border-radius: 0px;
+}
+
+.w3-input:focus{
+    border-bottom: 2px solid #007fff;
+}
+
+.center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.text-bold{
+    font-weight: bold;
+}
+
+/*-----Custom Bootstrap Classes----------*/
+
+
+.panel , .form-control{
+  border-radius: 0px;
+}
+
+.nav-tabs > li.active > a{
+  border-radius: 0px;
+}
+.nav-tabs{
+  background-color: #FFFFFF;
+}
+
+.nav-tabs > li > a{
+  color: #000000;
+}
+
+.nav-tabs > li.active > a, .nav-tabs > li.active > a:focus, .nav-tabs > li.active > a:hover {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    background-color: #fff;
+    border-color: #ddd #ddd transparent;
+    border-image: none;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 0px;
+    border-top: 4px #666363 solid;
+    color: #555;
+    cursor: default;
+}
+
+
+.container, .radio{
+    word-wrap: break-word;
+    width: 99%;
+}
+
+.modal-width-80{
+  width: 80%;
+}
+
+.modal-width-60{
+  width: 60%;
+}
+
+.modal-width-50{
+  width: 50%;
+}
+
+.modal-width-20{
+  width: 30%;
+}
+
+.navbar-default{
+  color: #000000;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #f44336;
+  padding-right: 20px;
+  padding-left: 20px;
+}
+
+.panel{
+  border-radius: 0px;
+}
+
+.panel-heading{
+  border-radius: 0px;
+}
+
+.dropdown-menu{
+  box-shadow: none;
+}

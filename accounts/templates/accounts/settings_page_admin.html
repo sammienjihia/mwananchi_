@@ -1,0 +1,301 @@
+{% load staticfiles %}
+    <div class="w3-container w3-center">
+        <h4 class="w3-text-blue">
+            <i class="fa fa-cog w3-text-brown"></i>&nbsp;&nbsp;System settings
+        </h4>
+    </div>
+
+    <div class="w3-margin">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab"
+                   class="active"
+                   id="account-settings-tab"
+                   href="#account-settings-container">
+                    <i class="fa fa-user-o w3-text-blue"></i> Account settings
+                </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab"
+                   id="sms-settings-tab"
+                   href="#sms-settings-container">
+                    <i class="fa fa-envelope-o w3-text-deep-orange"></i> Sms settings
+                </a>
+            </li>
+        </ul>
+
+        <div class="tab-content w3-container">
+            <div class="tab-pane fade w3-card-2 active in"
+                 id="account-settings-container">
+                <form class="form-horizontal"
+                     id="edit-password-form"
+                     method="post">
+                   <div class="w3-container">
+                      <div class="w3-row">
+                          <div class="w3-container w3-col l6 m6 s6">
+                              <br>
+                                <h5 class="w3-text-blue">Change account password</h5>
+                              <br>
+                              <div class="form-group">
+                                  <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        Current password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="current-password"
+                                         placeholder="Current password">
+                                       <span id="current-password-response" class="w3-text-red"></span>
+                                    </div>
+                                  </div>
+                              </div>
+                              <div class="form-group">
+                                <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        New password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="new-password"
+                                         placeholder="New password">
+                                       <span id="new-password-response" class="w3-text-red"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="w3-container">
+                                    <label for="first-name" class="w3-col l4 m4 s4">
+                                        Confirm password <span class="w3-text-red">*</span>
+                                    </label>
+                                    <div class="w3-rest">
+                                       <input type="password"
+                                         class="w3-input text-capitalize w3-text-blue"
+                                         id="confirm-password"
+                                         placeholder="Confirm password">
+                                       <span id="confirm-password-response" class="w3-text-red"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group w3-container">
+                                <a class="w3-btn w3-blue-gray pull-right"
+                                   id="btn-change-password">
+                                    <i class="fa fa-key"></i> Change password
+                                </a>
+                            </div>
+                        </div>
+                      </div>
+                  </div>
+                  <br>
+                  <br>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2"
+                 id="sms-settings-container">
+                  <form class="form-horizontal"
+                     id="manifesto-title-form"
+                     method="post">
+                    <br>
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                            <div class="w3-row">
+                                <div class="w3-container w3-col l6 m6 s6">
+                                    <h5 class="w3-text-blue">Edit sms account settings</h5>
+                                    <div class="form-group">
+                                        <div class="w3-container">
+                                            <label for="first-name" class="w3-col l4 m4 s4">
+                                                SMS short code
+                                            </label>
+                                            <div class="w3-rest">
+                                               <input type="text"
+                                                 class="w3-input text-capitalize w3-text-blue"
+                                                 id="sms-short-code"
+                                                 placeholder="SMS short code">
+                                               <span id="sms-short-code-response" class="w3-text-red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="w3-container">
+                                            <label for="first-name" class="w3-col l4 m4 s4">
+                                                SMS username <span class="w3-text-red">*</span>
+                                            </label>
+                                            <div class="w3-rest">
+                                               <input type="text"
+                                                 class="w3-input text-capitalize w3-text-blue"
+                                                 id="sms-username"
+                                                 placeholder="SMS username">
+                                               <span id="sms-username-response" class="w3-text-red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                     <div class="form-group">
+                                        <div class="w3-container">
+                                            <label for="first-name" class="w3-col l4 m4 s4">
+                                                SMS api key <span class="w3-text-red">*</span>
+                                            </label>
+                                            <div class="w3-rest">
+                                               <input type="text"
+                                                 class="w3-input text-capitalize w3-text-blue"
+                                                 id="sms-api-key"
+                                                 placeholder="SMS api key">
+                                               <span id="sms-api-key-response" class="w3-text-red"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group w3-container">
+                                        <a class="w3-btn w3-blue-gray pull-right"
+                                           id="btn-set-manifesto-title">
+                                            <i class="fa fa-envelope-o"></i> Change sms setting
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br>
+                        <br>
+                    </div>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2"
+                 id="social-media-settings-container">
+
+                 <form class="form-horizontal"
+                     id="social-media-settings-form"
+                     method="post">
+
+                      <br>
+                      <div class="w3-row w3-container">
+                        <h5 class="w3-text-blue">Twitter account settings</h5>
+                      </div>
+                      <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container border-bottom-dotted">
+                        <div>
+                          Have a Twitter Account? Then Authorize twitter.
+                        </div>
+                        <div>
+                          <br>
+                          <br>
+                          <a class="w3-btn w3-blue-gray " href="{% url 'accounts:authorize_twitter' %}">
+                            <i class="fa fa-twitter"></i>  Authorize twitter
+                          </a>
+                          <br>
+                          <br>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="w3-row w3-container">
+                        <h5 class="w3-text-blue">Facebook account settings</h5>
+                    </div>
+                    <br>
+
+                    <div class="form-group w3-container">
+                        <div class="w3-container border-bottom-dotted">
+                            <div>
+                                Have a facebook account? Then authorize facebook.
+                            </div>
+                            <div>
+                              <br>
+                              <br>
+{#                              <a class="w3-btn w3-blue-gray" href="{% url 'accounts:authorize_facebook' %}">#}
+{#                                <i class="fa fa-facebook"></i>  Authorize facebook#}
+{#                              </a>#}
+                              <br>
+                              <br>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                  </div>
+               </form>
+            </div>
+        </div>
+    </div>
+
+
+{% block extrahead %}
+    <script>
+        $(document).on('click', '#btn-change-password', function(e){
+        e.preventDefault();
+        $('#btn-change-password').prop('disabled', true);
+        var currentPassword = $('#current-password').val();
+        var newPassword = $('#new-password').val();
+        var confirmPassword = $('#confirm-password').val();
+        var errorExists = false;
+
+        if(currentPassword.length < 8){
+            $('#current-password').addClass('input-error');
+            errorExists = true;
+        }else{
+            $('#current-password').removeClass('input-error');
+        }
+
+        if(newPassword.length < 8){
+            $('#new-password').addClass('input-error');
+            errorExists = true;
+        }else{
+            $('#new-password').removeClass('input-error');
+        }
+
+        if(newPassword !== confirmPassword){
+            $('#confirm-password').addClass('input-error');
+            errorExists = true;
+        }else{
+             $('#confirm-password').removeClass('input-error');
+        }
+
+        if(errorExists === true){
+           $('#btn-change-password').prop('disabled', false);
+           return;
+        }
+
+        var data = {
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+        };
+
+        var srvRqst = $.ajax({
+            {% comment %}
+            url: "{% url 'accounts:change_password' %}",
+            {% endcomment %}
+            data: data,
+            type: 'post',
+            datatype: 'json'
+        });
+
+        srvRqst.done(function (response){
+            try{
+                var responseObj = $.parseJSON(response);
+                if(responseObj['STATUS'] === '1'){
+                    $('#edit-password-form').trigger('reset');
+                }else{
+                    $('#password-response').html(responseObj['MESSAGE']);
+                }
+            }catch(exp){}
+            finally{
+                  $('#btn-change-password').prop('disabled', false);
+            }
+        });
+
+        srvRqst.fail(function (jxHQR, errorMsg, errThrown) {
+             $('#btn-change-password').prop('disabled', false);
+        });
+    });
+ </script>
+{% endblock %}
+
+
+
+
+
+
+

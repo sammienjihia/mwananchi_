@@ -1,0 +1,810 @@
+{% load static %}
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MWANANCHI</title>
+
+  {% block head %}{% endblock %}
+
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/jqueryui/jquery-ui.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/w3css/w3.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/css/bootstrap.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/font-awesome/css/font-awesome.min.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.css' %}"/>
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/LuminoStyles.css' %}" />
+  <link rel="stylesheet" type="text/css" href="{% static 'accounts/CustomCss/styles.css' %}" />
+
+  <!--[if lt IE 9]>
+      <script src="js/html5shiv.js"></script>
+      <script src="js/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+
+<body>
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#sidebar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+                   <img src="{% static "accounts/img/mwananchi-logo2.png" %}"
+                     alt="Profile pic"
+                     class="w3-padding-8"
+                     style="height: 70px; width: 70px;"/>
+                    <b>MWANANCHI</b>
+				<ul class="user-menu">
+                    <li class="dropdown pull-right">
+
+                        <a href="#" class="dropdown-toggle w3-text-black" data-toggle="dropdown">
+                            <i class="fa fa-user-o"></i> &nbsp;&nbsp; {{ request.user.email }}
+                            <span class="caret"></span>
+                        </a>
+
+                        <ul class="dropdown-menu" role="menu">
+
+                          <li>
+                            <a class="w3-text-black cursor-pointer"
+                               href="{% url 'accounts:profile_page' %}">
+                               <i class="fa fa-user-o"></i>&nbsp; Profile
+                            </a>
+                          </li>
+
+                          <li class="divider"></li>
+
+                          <li>
+                            <a class="w3-text-black cursor-pointer"
+                               href="{% url 'accounts:settings_page' %}">
+                                <i class="fa fa-cog"></i>&nbsp;Settings
+                            </a>
+                          </li>
+
+                          <li class="divider"></li>
+
+                          <li>
+                            <a class="w3-text-black cursor-pointer"
+                               href="{% url 'accounts:logout_user' %}">
+                              <i class="fa fa-power-off"></i>
+                              &nbsp; Logout
+                            </a>
+                          </li>
+                        </ul>
+                    </li>
+                 </ul>
+            </div>
+        </div>
+	</nav>
+
+    {% block sidebar %}
+        {% if request.user.is_superuser == True and  request.user.is_staff  == True %}
+            {% include 'accounts/sidebar_admin.html' %}
+        {% elif  request.user.is_superuser == False and  request.user.is_staff  == True%}
+            {% include 'accounts/sidebar_client.html' %}
+        {% elif request.user.is_superuser == False and  request.user.is_staff  == False %}
+            {% include 'accounts/sidebar_volunteer.html' %}
+        {% endif %}
+    {% endblock %}
+
+
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+        <br>
+        {% block content %}
+
+        {% endblock %}
+    </div>
+
+    <div id="dynamic-content-holder"></div>
+
+    <div id="page-modal"
+		class="modal fade" role="dialog"
+		data-backdrop="static"
+		data-keyboard="false">
+        <div class="modal-dialog modal-width-60" id='page-modal-dialog'>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <a class=" pull-right cursor-pointer w3-text-red" data-dismiss="modal">
+                        <i class="fa fa-times-circle-o"></i>
+                    </a>
+                    <h4 id="page-modal-header" class="text-center w3-text-black">
+
+                    </h4>
+                </div>
+
+                <div class="modal-body" id="page-modal-body">
+
+                </div>
+                <div class="modal-footer" id="page-modal-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'accounts/js/jquery.js' %}"></script>
+    <script src="{% static 'accounts/jqueryui/jquery-ui.min.js' %}"></script>
+    <script src="{% static 'accounts/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/highcharts.js' %}"></script>
+    <script src="{% static 'accounts/Highcharts/code/modules/exporting.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/transition.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/moment.min.js' %}"></script>
+    <script src="{% static 'accounts/bootstrapdatetimepicker/bootstrap-datetimepicker.min.js' %}"></script>
+	<script src="{% static 'accounts/CustomJs/sidebar.js' %}"></script>
+
+    <script>
+    $('.datepicker-required').datetimepicker({
+        sideBySide:true,
+        collapse:true,
+        format: 'YYYY-MM-DD'
+    });
+  </script>
+
+    <!--
+         Script to me moved to sms/static/sms
+    -->
+
+    <script>
+        var SMS_RECIPIENT_OPTION = 'KEYED_NUMBERS';
+        var FILE_IS_SET = false;
+        var FILTERS_SET = false;
+
+        var SUBSCRIBER_FILTERS = {
+            gender: '',
+            max_age : '118',
+            min_age : '0',
+            county_id: '',
+            constituency_id: '',
+            ward_id: ''
+        };
+        /***
+         * Get and display the number of recipients
+         */
+        function DisplayNumberOfSubscribers(){
+            var srvRqst = $.ajax({
+                url: '{% url "subscribers:get_number_of_subscribers" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var opts = '<option value="NULL">--Select county--</option>';
+                    for (var i =0; i< responseObj['counties'].length; i++){
+                        opts += '<option value="'+responseObj['counties'][i]['id']+'">'
+                            + responseObj['counties'][i]['county_name']
+                            + '</option>';
+                        }
+
+
+                    var html = '<div class="w3-container">'
+                        +' <span class="w3-text-brown"><b> Number of recipients: '
+                        + '<span id="num-of-subscribers">'+parseFloat(responseObj['NUM_OF_SUBSCRIBERS']).toLocaleString()+'</span>'
+                        +' </b></span>'
+                        +'<form class="form-horizontal" id="filter-subscriber-form">'
+                        +'<div class="form-group row">'
+                        +'  <div class="col-lg-6 col-sm-6 col-md-6">'
+                        +'    <label>'
+                        +'      <span>'
+                        +'        Age range [<span id="min-age">18</span> to <span id="max-age">116 </span> yrs]'
+                        +'      </span>'
+                        +'    </label>'
+                        +'    <div class="" id="age-range"></div>'
+                        +'  </div>'
+                        +'  <div class="col-lg-6 col-sm-6 col-md-6">'
+                        +'    Gender'
+                        +'    <select id="sms-recipient-filter-gender">'
+                        +'    <option value="NULL">--Select--</option>'
+                        +'    <option value="Male">Male</option>'
+                        +'    <option value="Female">Female</option>'
+                        +'    </select>'
+                        +'  </div>'
+                        +'</div>'
+                        +'<br>'
+                        +'<div class="form-group row">'
+                        +'  <div class="col-lg-4 col-sm-4 col-md-4">'
+                        +'    County<br>'
+                        +'    <select id="sms-recipient-filter-county-id">'
+                        + opts
+                        +'    </select>'
+                        +'  </div>'
+                        +'  <div class="col-lg-4 col-sm-4 col-md-4">'
+                        +'    Constituency<br>'
+                        +'    <select id="sms-recipient-filter-constituency-id">'
+                        +'    <option value="NULL">--Select--</option>'
+                        +'    </select>'
+                        +'  </div>'
+                        +'  <div class="col-lg-4 col-sm-4 col-md-4">'
+                        +'    Ward<br>'
+                        +'    <select id="sms-recipient-filter-ward-id">'
+                        +'    <option value="NULL">--Select --</option>'
+                        +'    </select>'
+                        +'  </div>'
+                        +'</div>'
+                        +'</form>'
+                        +'</div>';
+
+                    $('#form-extra-elements').html(html);
+
+                    //On selecting age range
+                    $('#age-range').slider({
+                      range: true,
+                      min: 18,
+                      step: 1,
+                      max: 116,
+                      values: [ 18, 116 ],
+                      slide: function(e, ui){
+                        var age_vals = ui.values;
+                        $('#min-age').html(age_vals[0]);
+                        $('#max-age').html(age_vals[1]);
+                        SUBSCRIBER_FILTERS.min_age = age_vals[0];
+                        SUBSCRIBER_FILTERS.max_age = age_vals[1];
+                        GetSubscribersCountOnFilter();
+                      }
+                    });
+
+                    //On selecting gender
+                    $(document).on('change', '#sms-recipient-filter-gender', function(e){
+                        e.preventDefault();
+                        SUBSCRIBER_FILTERS.gender = $(this).val();
+                        GetSubscribersCountOnFilter();
+                    });
+
+                    //On selecting county
+                     $(document).on('change', '#sms-recipient-filter-county-id', function(e){
+                        e.preventDefault();
+                        var county_id = $(this).val();
+                        SUBSCRIBER_FILTERS.county_id = county_id;
+                        GetSubscribersCountOnFilter();
+                        var srvRqst = $.ajax({
+                            url: '{% url "site_admin:get_constituency_by_county" %}',
+                            data: {
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                                county_id: county_id
+                            },
+                            type: 'post',
+                            datatype: 'json'
+                        });
+                        srvRqst.done(function(response){
+                            try{
+                                var responseObj = $.parseJSON(response);
+                                var opts = '<option value="NULL">Select Constituency</option>';
+                                for (var i =0; i< responseObj.length; i++){
+                                    opts += '<option value="'+responseObj[i]['id']+'">'
+                                        + responseObj[i]['constituency_name']
+                                        + '</option>';
+                                }
+                                $('#sms-recipient-filter-constituency-id').html(opts);
+                            }catch(exp){}finally {}
+                        });
+                     });
+
+                     //On selecting constituency
+                     $(document).on('change', '#sms-recipient-filter-constituency-id', function(e){
+                        e.preventDefault();
+                        var constituency_id = $(this).val();
+                        SUBSCRIBER_FILTERS.constituency_id = constituency_id;
+                        GetSubscribersCountOnFilter();
+
+                        var srvRqst = $.ajax({
+                            url: '{% url "site_admin:get_ward_by_constituency" %}',
+                            data: {
+                                csrfmiddlewaretoken: '{{ csrf_token }}',
+                                constituency_id: constituency_id,
+                            },
+                            type: 'post',
+                            datatype: 'json'
+                        });
+                        srvRqst.done(function(response){
+                            try{
+                                var responseObj = $.parseJSON(response);
+                                var opts = '<option value="NULL">Select Ward</option>';
+                                for (var i =0; i< responseObj.length; i++){
+                                    opts += '<option value="'+responseObj[i]['id']+'">'
+                                        + responseObj[i]['ward_name']
+                                        + '</option>';
+                                }
+                                $('#sms-recipient-filter-ward-id').html(opts);
+                            }catch(exp){}finally {}
+                        });
+                     });
+
+                     //On selecting ward
+                     $(document).on('change', '#sms-recipient-filter-ward-id', function(e){
+                        e.preventDefault();
+                        var ward_id = $(this).val();
+                        SUBSCRIBER_FILTERS.ward_id = ward_id;
+                        GetSubscribersCountOnFilter()
+                     });
+
+                }catch(exp){
+
+                }
+            });
+            srvRqst.fail(function(xJHQR, errThrown, errMsg){
+
+            });
+        }
+
+        /***
+         * Get filter filter subscribers
+         *
+         */
+
+        function GetSubscribersCountOnFilter(){
+            var data = SUBSCRIBER_FILTERS;
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}';
+            var srvRqst = $.ajax({
+                url: '{% url 'subscribers:get_subscribers_count_on_filter' %}',
+                data: data,
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    $('#num-of-subscribers').html(responseObj['NUM_OF_SUBSCRIBERS']);
+                }catch(exp){}finally {}
+            });
+        }
+
+        /***
+         * Get and display the recipients
+         *
+         */
+        function DisplaySubscribers(){
+            var srvRqst = $.ajax({
+                url: '{% url "subscribers:get_subscribers_list_for_sms" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var table = '<div class="w3-container">'
+                        +'</div>'
+                        +'<table class="w3-table w3-striped w3-small w3-hoverable">'
+                        +'<thead class="w3-gray w3-text-white">'
+                        +'<tr>'
+                        +'<th>'
+                        +'<input type="checkbox" name="select_all_subscriber" id="select-all-subscribers">'
+                        +'</th>'
+                        +'<th>'
+                        +'Phone number'
+                        +'</th>'
+                        +'<th>'
+                        +'Full name'
+                        +'</th>'
+                        +'</tr>'
+                        +'</thead>'
+                        +'<tbody>';
+
+                    for(var i =0; i<responseObj.length; i++){
+                        var subscriber = responseObj[i];
+                        table += '<tr>'
+                            +'<td>'
+                            +'<input type="checkbox" name="select_subscriber" value="'+subscriber['mobileNumber']+'">'
+                            +'</td>'
+                            +'<td>'+subscriber['fullName']+'</td>'
+                            +'<td>'+subscriber['mobileNumber']+'</td>'
+                            +'</tr>';
+                    }
+                    table += '</tbody>'
+                        +'</table>';
+                    $('#form-extra-elements').html(table);
+                }catch(exp){
+
+                }
+            });
+            srvRqst.fail(function(xJHQR, errThrown, errMsg){
+
+            });
+        }
+
+        $(document).on('change', '#select-all-subscribers', function () {
+            $('[name ="select_subscriber"]').prop('checked', this.checked);
+        });
+
+        /***
+         * Append recipients download form
+         */
+        function append_recipients_download_form(){
+            var upload_btn= '<label for="upload-recepients">'
+                +'Select file <span class="w3-text-orange w3-small">'
+                +'First column should be mobile number'
+                +'</span>'
+                +'</label>'
+                +'<input type="file" id="recipients-file-upload" accept=".xlsx, .xls, .csv">'
+                +'<span id="recipients-file-upload-response"></span>';
+            $('#form-extra-elements').html(upload_btn);
+        }
+
+        /***
+         * Upload recipients excel document
+         */
+
+        function UploadRecipientsFileData(){
+            var fileSelect = document.getElementById('recipients-file-upload');
+            var file = fileSelect.files;
+            var formData = new FormData();
+
+            if(file[0].size/1000000 > 20){
+              $('#recipients-file-upload-response')
+                .html('The file is too large. Ensure that it\'s at most 20mb')
+                .addClass('w3-text-red')
+                .removeClass('w3-text-green');
+              return;
+            }else{
+                $('#recipients-file-upload-response')
+                .html('')
+                .removeClass('w3-text-red');
+            }
+            var fileName = fileSelect.value.split(/(\\|\/)/g).pop();
+            var extension = fileName.substring((fileName.lastIndexOf('.') + 1));
+            var allowedExt = ['xlsx', 'xls', 'csv'];
+            var extensionFoundAt = $.inArray(extension, allowedExt);
+
+            if(extensionFoundAt === -1){
+               $('#recipients-file-upload-response')
+                .html('Wrong file format. Use .xlsx, .xls, or .csv')
+                .addClass('w3-text-red')
+                .removeClass('w3-text-green');
+              return;
+            }else{
+               $('#recipients-file-upload-response')
+                .html('')
+                .removeClass('w3-text-red');
+            }
+
+            formData.append('file', file[0], file[0].name);
+            formData.append('fileName', 'LIST_OF_RECIPIENTS');
+            formData.append('csrfmiddlewaretoken',  '{{ csrf_token }}');
+
+            var url = '{% url "sms:upload_recipients_excel_file" %}'
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
+
+            xhr.onload = function(){
+                if (xhr.status === 200){
+                    var responseObj = $.parseJSON(xhr.responseText);
+                    if(responseObj['STATUS'] === '1'){
+                        $('#recipients-file-upload-response')
+                        .html('Number of recipients: ' +responseObj['NUM_OF_RECORDS']
+                            +'<br>'
+                            +responseObj['MESSAGE'])
+                        .removeClass('w3-text-red')
+                        .addClass('w3-text-green');
+                        FILE_IS_SET = true;
+                    }
+                    else{
+                        FILE_IS_SET = false;
+                    }
+                }else{
+
+                }
+            };
+            xhr.send(formData);
+        }
+
+
+        $(document).on('click', '.ctrl-get-sms-form', function (e) {
+            e.preventDefault();
+
+            var srvRqst = $.ajax({
+                url: "{% url 'subscribers:get_number_of_subscribers' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+
+                    var list = '';
+
+                    if(responseObj['STATUS'] === '1'){
+                        list = '<ul class="dropdown-menu">'
+                            +'   <li>'
+                            +'     <a  class="cursor-pointer opt-recipients" data-value="KEYED_NUMBERS">'
+                            +'         <i class="fa fa-phone w3-text-teal"></i> &nbsp;Phone numbers'
+                            +'     </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+                            +'  <li>'
+                            +'     <a class="cursor-pointer opt-recipients" data-value="ALL_SUBSCRIBERS">'
+                            +'          <i class="fa fa-users w3-text-blue"></i> &nbsp; Subscribers'
+                            +'     </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+                            +'   <li>'
+                            +'      <a class="cursor-pointer opt-recipients" data-value="SELECT_SUBSCRIBERS">'
+                            +'         <i class="fa fa-check-square-o w3-text-grey"></i> Select from subscribers'
+                            +'      </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+                            +'   <li>'
+                            +'     <a  class="cursor-pointer opt-recipients" data-value="UPLOAD_LIST">'
+                            +'         <i class="fa fa-file-excel-o w3-text-green"></i> &nbsp;Upload list'
+                            +'     </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+
+                            +' </ul>';
+                    }else{
+                        list = '<ul class="dropdown-menu">'
+                            +'   <li>'
+                            +'     <a  class="cursor-pointer opt-recipients" data-value="KEYED_NUMBERS">'
+                            +'         <i class="fa fa-phone w3-text-teal"></i> &nbsp;Phone numbers'
+                            +'     </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+                            +'   <li>'
+                            +'     <a  class="cursor-pointer opt-recipients" data-value="UPLOAD_LIST">'
+                            +'         <i class="fa fa-file-excel-o w3-text-green"></i> &nbsp;Upload list'
+                            +'     </a>'
+                            +'   </li>'
+                            +'   <li class="divider"></li>'
+                            +'   <li>'
+                            +'     <a  class="cursor-pointer opt-recipients" data-value="VOLUNTEERS">'
+                            +'         <i class="fa fa-user-circle-o w3-text-orange"></i> &nbsp;All volunteers/agents'
+                            +'     </a>'
+                            +'   </li>'
+                            +' </ul>';
+                    }
+
+                    var form = ' <div class="row">'
+                        +'<div class="col-lg-offset-2 col-lg-8">'
+                        +'<form class="form"'
+                        +'enctype="multipart/form-data"'
+                        +'          id="send-sms-form" >'
+                        +'        <div class="form-group w3-row">'
+                        +'            <label class="w3-col l1 m1 s1">'
+                        +'                <br>To:'
+                        +'            </label>'
+                        +'            <div class="w3-col l8 m8 s8">'
+                        +'                <input type="text"'
+                        +'                       class="w3-input"'
+                        +'                        placeholder="Comma separate numbers. Eg. 07XXXXXXXX, 07XXXXXXXX"'
+                        +'                       id="recipients">'
+                        +'               <span class="w3-text-red" id="recipients-response"></span>'
+                        +'            </div>'
+                        +'            <div class="w3-col l3 m3 s3"><br>'
+                        +'                <div class="dropdown">'
+                        +'                    <a class="dropdown-toggle cursor-pointer w3-text-blue" data-toggle="dropdown">&nbsp;Select recipients&nbsp;<i class="fa fa-caret-down"></i></a>'
+
+                        + list
+
+                        +'                </div>'
+                        +'            </div>'
+                        +'        </div>'
+
+                        +'        <div class="form-group" id="form-extra-elements">'
+
+                        +'        </div>'
+
+                        +'        <div class="form-group">'
+                        +'            <textarea class="w3-input"'
+                        +'              id="message"'
+                        +'              rows="5"'
+                        +'              placeholder="Message"></textarea>'
+                        +'<span id="message-response"></span>'
+                        +'        </div>'
+                        +'        <div class="form-group">'
+                        +'            <a class="w3-btn w3-blue-gray pull-right" id="btn-send-batch-sms">'
+                        +'              <i class="fa fa-send"></i> Send'
+                        +'            </a>'
+                        +'        </div>'
+                        +'    </form>'
+                        +' </div>'
+                        +' </div>';
+                    $('#page-modal-dialog').removeClass('modal-width-20');
+                    $('#page-modal-dialog').addClass('modal-width-80');
+                    $('#page-modal-header').html('Send new SMS');
+                    $('#page-modal-body').html(form);
+                    $('#page-modal-footer').html('');
+                    $('#page-modal').modal('show');
+                }catch(exp){
+
+                }
+            });
+            srvRqst.fail(function(xJHQR, errThrown, errMsg){
+
+            });
+        });
+
+        $(document).on('click', '.opt-recipients', function(e){
+            e.preventDefault();
+            SMS_RECIPIENT_OPTION = $(this).data('value');
+            switch (SMS_RECIPIENT_OPTION){
+                case 'KEYED_NUMBERS':
+                    $('#form-extra-elements').empty();
+                    $('#recipients').val('');
+                    $('#recipients-response').html('');
+                    break;
+                case 'ALL_SUBSCRIBERS':
+                    $('#form-extra-elements').empty();
+                    $('#recipients').val('All subscribers.');
+                    $('#recipients-response').html('');
+                    DisplayNumberOfSubscribers();
+                    break;
+                case 'SELECT_SUBSCRIBERS':
+                    $('#form-extra-elements').empty();
+                    $('#recipients').val('Selected recipients.');
+                    $('#recipients-response').html('');
+                    DisplaySubscribers();
+                    break;
+                case 'UPLOAD_LIST':
+                     $('#recipients').val('Recipients from excel document.');
+                     $('#recipients-response').html('');
+                    append_recipients_download_form();
+                    break;
+                case 'VOLUNTEERS':
+                    $('#form-extra-elements').empty();
+                    $('#recipients').val('Send SMS to all volunteers.');
+                    $('#recipients-response').html('');
+                    break;
+                default:
+
+                    break;
+            }
+        });
+
+        $(document).on('change', '#recipients-file-upload', function (e) {
+            e.preventDefault();
+            UploadRecipientsFileData();
+        });
+
+        /**
+        * Event handler for send sms
+        **/
+        $(document).on('click', '#btn-send-batch-sms', function(e){
+            e.preventDefault();
+
+            $('#btn-send-batch-sms').prop('disabled', true);
+
+            var errorExists = false;
+            var message = $('#message').val();
+
+            if(message.trim().length === 0){
+                errorExists = true;
+                $('#message').addClass('input-error');
+            }else{
+                $('#message').removeClass('input-error');
+            }
+
+            var data = {
+                BATCH_TYPE: SMS_RECIPIENT_OPTION,
+                message: message,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                subscriberFilter: JSON.stringify(SUBSCRIBER_FILTERS)
+            };
+
+            switch (SMS_RECIPIENT_OPTION){
+                case 'ALL_SUBSCRIBERS':
+                    break;
+                case 'VOLUNTEERS':
+                    break
+                case 'SELECT_SUBSCRIBERS':
+                    var subscribersList = [];
+                    $('[name ="select_subscriber"]:checked').each(function(){
+                        subscribersList.push($(this).val())
+                    });
+
+                    if(subscribersList.length === 0){
+                        $('#recipients-response')
+                            .html('Select recipients from a the list below')
+                            .addClass('w3-text-red')
+                            .removeClass('w3-text-green');
+                        errorExists = true;
+                    }else{
+                         $('#recipients-response')
+                            .html('Number of recipients: ' + subscribersList.length)
+                            .removeClass('w3-text-red')
+                            .addClass('w3-text-green');
+                        data['recipientsArr'] = JSON.stringify(subscribersList);
+                    }
+                    break;
+                case 'UPLOAD_LIST':
+                    if(FILE_IS_SET === false){
+                         $('#recipients-file-upload-response')
+                            .html('Select recipients from a file')
+                            .addClass('w3-text-red')
+                            .removeClass('w3-text-green');
+                         errorExists = true;
+                    }
+                    break;
+                case 'KEYED_NUMBERS':
+                    var recipients = $('#recipients').val();
+                    if(recipients.length === 0){
+                        $('#recipients').addClass('input-error');
+                        errorExists = true;
+                    }else{
+                         $('#recipients').removeClass('input-error');
+                         var recipientsArr = recipients.split(',');
+                        data['recipientsArr'] = JSON.stringify(recipientsArr);
+                    }
+                    break;
+            }
+
+            if(errorExists === true){
+                $('#btn-send-batch-sms').html('Send').prop('disabled', false);
+                return;
+            }
+
+            var srvRqst = $.ajax({
+                url: '{% url "sms:send_batch_sms" %}',
+                data: data,
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function(){
+                    $('#btn-send-batch-sms').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                }
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '1'){
+                        $('#send-sms-form').trigger('reset');
+                        $('#message-response').addClass('w3-text-green')
+                            .removeClass('w3-text-red')
+                            .html(responseObj['MESSAGE']);
+                    }else{
+                        $('#message-response').addClass('w3-text-red')
+                            .removeClass('w3-text-green')
+                            .html(responseObj['MESSAGE']);
+                    }
+                }catch(exp){
+
+                }finally{
+                     $('#btn-send-batch-sms').html('Send').prop('disabled', false);
+                }
+            });
+            srvRqst.fail(function(xJHQR, errThrown, errMsg){
+
+                $('#btn-send-batch-sms').html('Send').prop('disabled', false);
+            });
+        });
+    </script>
+
+	<script>
+		!function ($) {
+		    $(document).on("click","ul.nav li.parent > a > span.icon", function(){
+		        $(this).find('em:first').toggleClass("glyphicon-minus");
+		    });
+		    $(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+		}(window.jQuery);
+
+		$(window).on('resize', function () {
+		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+		});
+		$(window).on('resize', function () {
+		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+		});
+	</script>
+    {% block extrahead %}
+
+    {% endblock %}
+</body>
+</html>
+
+
+

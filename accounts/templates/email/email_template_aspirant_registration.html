@@ -1,0 +1,36 @@
+{% extends 'email/email_template.html' %}
+
+{% block content %}
+    <p>
+        Dear {{user.first_name}}  {{user.last_name}}, you have been registered on the Brand Sense platform.
+    </p>
+    <p>
+        Below are your details.
+    </p>
+    <table class="w3-table w3-striped w3-small">
+        <tr>
+            <th>Full name</th>
+            <td>{{user.first_name}}  {{user.last_name}}</td>
+        </tr>
+        <tr>
+            <th>Email address</th>
+            <td>{{user.email}}</td>
+        </tr>
+        <tr>
+            <th>Phone number</th>
+            <td>{{user.aspirant.phone_number}}</td>
+        </tr>
+        <tr>
+            <th>Region </th>
+            <td>{{user.aspirant.region_name}}</td>
+        </tr>
+        <tr>
+            <th>County</th>
+            <td>{{user.aspirant.county}}</td>
+        </tr>
+    </table>
+    <p>
+        use the link below to activate your account.
+    </p>
+    <a href="{{ protocol }}://{{ domain }}{% url 'accounts:set_password' uidb64=uid  token=token %}">{{ protocol }}://{{ domain }}{% url 'accounts:set_password' uidb64=uid  token=token %}</a>
+{% endblock %}

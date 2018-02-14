@@ -1,0 +1,49 @@
+<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
+    <ul class="nav menu">
+        <li>&nbsp;</li>
+        <li>
+            <a class="w3-text-black cursor-pointer"
+               href="{% url 'accounts:landing_page' %}">
+                <i class="fa fa-home w3-text-teal"></i>&nbsp;&nbsp; Home
+            </a>
+        </li>
+
+        <li role="presentation" class="divider"></li>
+
+        <li class="parent">
+            <a data-toggle="collapse"
+               data-target="#subscribers-sub-menu"
+               class="w3-text-black cursor-pointer">
+              <i class="fa fa-users w3-text-blue"></i>
+              &nbsp; Subscribers
+            </a>
+            <ul class="children collapse" id="subscribers-sub-menu">
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                    href = "{% url 'subscribers:batch_upload_subscribers_form' %}">
+                    <i class="fa fa-file-excel-o w3-text-green"></i>&nbsp; Batch upload subscribers
+                </a>
+              </li>
+
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href = "{% url 'subscribers:single_upload_subscribers_form' %}">
+                  <i class="fa fa-plus-circle w3-text-blue"></i>&nbsp; Add single subscriber
+                </a>
+              </li>
+
+              <li>
+                <a class="w3-text-black cursor-pointer"
+                   href="{% url 'subscribers:subscribers_list' offset=0 %}">
+                  <i class="fa fa-list w3-text-black"></i>&nbsp; List of subscribers
+                </a>
+              </li>
+
+            </ul>
+        </li>
+    </ul>
+</div>
+
+
+
+

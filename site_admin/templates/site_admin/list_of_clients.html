@@ -1,0 +1,217 @@
+{% extends 'accounts/base_app.html' %}
+
+{% block content %}
+    <br>
+    <div class="w3-container">
+         <h4 class="w3-center w3-text-blue">List of Clients</h4>
+        <form class="form-horizontal">
+            <div class="form-group">
+              <div class="col-lg-4 col-md-4 col-sm-4">
+                <input type="text"
+                  class="w3-input w3-text-blue pull-right"
+                  id="agent-search-val"
+                  name="agent_search_val"
+                  placeholder="Search for candidates."
+                  autofocus="">
+              </div>
+              <div class="col-lg-2 col-md-2 col-sm-2">
+                <a class="w3-btn w3-blue-gray pull-left" id="btn-search-agent">
+                  <i class="fa fa-search"></i>
+                </a>
+              </div>
+              <div class="col-lg-6 col-md-6 col-sm-6">
+
+              </div>
+            </div>
+        </form>
+
+        <table class="w3-table w3-striped">
+            <thead class="w3-grey w3-text-white">
+              <tr>
+                <th></th>
+                <th>System user name</th>
+                <th>Email address</th>
+                <th>Phone number</th>
+                <th>County Position</th>
+                <th>Region</th>
+                <th>County</th>
+                <th></th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="data-rows">
+                {% for client in client_list %}
+                    <tr class="cursor-pointer w3-hover-teal ctrl-get-aspirant-info" data-value="{{ client.id }}">
+                        <td>{{ forloop.counter | add:current_offset}}</td>
+                        <td>{{ client.user.first_name }} {{ client.user.last_name }}</td>
+                        <td>{{ client.user.email }}</td>
+                        <td>{{ client.phone_number }}</td>
+                        <td>{{ client.seat.seat_name }}</td>
+                        <td>{{ client.region_name }}</td>
+                        <td>{{ client.county.county_name }}</td>
+                        <td>{{ client.constituency.constituency_name }}</td>
+                        <td>{{ client.ward.ward_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+      </table>
+      <br>
+      <br>
+      <span class="pull-right">
+        <a class="w3-btn w3-blue-gray cursor-pointer"
+            href="{% url 'site_admin:list_of_aspirants' offset=prev_offset %}">
+            <i class="fa fa-angle-double-left"></i>
+        </a>
+        <a class="w3-btn w3-blue-gray cursor-pointer"
+           href="{% url 'site_admin:list_of_aspirants' offset=next_offset %}">
+            <i class="fa fa-angle-double-right"></i>
+        </a>
+      </span>
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        $(document).on('click', '.ctrl-get-aspirant-info', function(e){
+            e.preventDefault();
+            var client_id = $(this).data('value');
+            var srvRqst = $.ajax({
+                url: '{% url 'site_admin:get_client_info' %}',
+                data: {
+                    client_id: client_id,
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                },
+                type:'post',
+                datatype: 'json'
+            });
+
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var html = '<div class="w3-container">'
+                        +'<table class="w3-table w3-striped">'
+                        +'<tr>'
+                        +'<td colspan="2" class="w3-center">'
+                        +'<img src="{{MEDIA_URL}}/'+responseObj['profile_picture']+'"'
+                        +' alt="Profile pic"'
+                        +' class="w3-padding-8"'
+                        +' style="height: 250px; width: 60%;"/>'
+                        +'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<tr>'
+                        +'<th>System user full name</th>'
+                        +'<td>'+responseObj['full_name']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>Phone number</th>'
+                        +'<td>'+responseObj['phone_number']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>Email address</th>'
+                        +'<td>'+responseObj['email_address']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>Username</th>'
+                        +'<td>'+responseObj['user_name']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>Number of subscribers</th>'
+                        +'<td>'+responseObj['number_of_subscribers']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>Region name</th>'
+                        +'<td>'+responseObj['region']+'</td>'
+                        +'</tr>'
+                        +'<tr>'
+                        +'<th>County</th>'
+                        +'<td>'+responseObj['county']+'</td>'
+                        +'</tr>'
+                        +'</table>'
+                        +'</div>';
+
+                    var footer ='';
+                    if(responseObj['is_active'] == 1){
+                        footer = '<span id="lock_client_account">'
+                        +'<a class="cursor-pointer w3-text-deep-orange" id="lock_account" data-value="'+responseObj['client_id']+'"><i class="fa fa-lock"></i> Lock account</a>&nbsp;&nbsp;&nbsp;'
+                        +'</span>';
+                    }
+                    else if(responseObj['is_active'] == 0){
+                        footer = '<span id="lock_client_account">'
+                        +'<a class="cursor-pointer w3-text-green" id="unlock_account" data-value="'+responseObj['client_id']+'"><i class="fa fa-unlock"></i> Unlock account</a>&nbsp;&nbsp;&nbsp;'
+                        +'</span>';
+                    }
+
+
+                    $('#page-modal-header').html('');
+                    $('#page-modal-body').html(html);
+                    $('#page-modal-footer').html(footer);
+                    $('#page-modal').modal('show');
+                }catch(exp){}finally {}
+            });
+
+            srvRqst.fail(function () {
+
+            });
+        });
+        $(document).on('click', '#lock_account', function(e){
+            var clientID = $(this).data("value");
+            var data = {
+                client_id: clientID,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+
+            var srvRqst = $.ajax({
+                data: data,
+                type: 'post',
+                datatype: 'json',
+                url: '{% url 'site_admin:lock_client_account' %}',
+                beforeSend: function(){
+                    $('#lock_client_account').html("<i class='fa fa-spinner spin'></i> Loading...");
+                }
+            });
+
+            srvRqst.done(function (response) {
+                var responseObj = $.parseJSON(response);
+                if(responseObj['status'] == 1) {
+                    $('#lock_client_account').html('<a class="cursor-pointer w3-text-green" id="unlock_account" data-value="' + clientID + '"><i class="fa fa-unlock"></i> Unlock account</a>&nbsp;&nbsp;&nbsp;');
+                }
+            });
+
+            srvRqst.fail(function(xhr, err, errThrown){
+                $('#lock_client_account').html('<a class="cursor-pointer w3-text-deep-orange" id="lock_account" data-value="'+clientID+'"><i class="fa fa-lock"></i> Lock account</a>&nbsp;&nbsp;&nbsp;');
+            });
+        });
+
+        $(document).on('click', '#unlock_account', function(e){
+            var clientID = $(this).data("value");
+            var data = {
+                client_id: clientID,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            };
+
+            var srvRqst = $.ajax({
+                data: data,
+                type: 'post',
+                datatype: 'json',
+                url: '{% url 'site_admin:unlock_client_account' %}',
+                beforeSend: function(){
+                    $('#lock_client_account').html("<i class='fa fa-spinner spin'></i> Loading...");
+                }
+            });
+
+            srvRqst.done(function (response) {
+                var responseObj = $.parseJSON(response);
+                if(responseObj['status'] == 1) {
+                    $('#lock_client_account').html('<a class="cursor-pointer w3-text-deep-orange" id="lock_account" data-value="' + clientID + '"><i class="fa fa-lock"></i> Lock account</a>&nbsp;&nbsp;&nbsp;');
+
+                }
+            });
+
+            srvRqst.fail(function(xhr, err, errThrown){
+                $('#lock_client_account').html('<a class="cursor-pointer w3-text-green" id="unlock_account" data-value="'+clientID+'"><i class="fa fa-unlock"></i> Unlock account</a>&nbsp;&nbsp;&nbsp;');
+            });
+        });
+    </script>
+{% endblock %}

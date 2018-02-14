@@ -1,0 +1,41 @@
+{% load static %}
+{% load staticfiles %}
+<div class="w3-container w3-card-2">
+        <h4 class="w3-center w3-text-blue">Volunteer's user profile</h4>
+        <div class="w3-row">
+            <div class="w3-rest w3-container">
+                <table class="w3-table w3-striped">
+                    <tr>
+                       <th>Full name</th>
+                       <td>{{ request.user.first_name }} {{ request.user.last_name }}</td>
+                    </tr>
+                    <tr>
+                       <th>Email address</th>
+                       <td>{{ request.user.email }}</td>
+                    </tr>
+
+                    <tr>
+                       <th>Username</th>
+                       <td>{{ request.user.username }}</td>
+                    </tr>
+
+                    <tr>
+                       <th>County</th>
+                       <td>{{ county_name }}</td>
+                    </tr>
+                    <tr>
+                       <th>Number of subscribers</th>
+                       <td>
+                           <a href="{% url 'subscribers:subscribers_list' %}">
+                            {{ subscriber_count }}
+                           </a>
+                       </td>
+                    </tr>
+                </table>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+
+

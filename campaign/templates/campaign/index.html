@@ -1,0 +1,253 @@
+{% extends 'accounts/landing.html'%}
+
+{% block content %}
+   <div class="w3-container">
+        {% if has_manifesto %}
+            {% if can_add_manifesto %}
+                <a class="w3-btn w3-grey w3-text-white pull-right"
+                   href="{% url 'campaign:new_manifesto_form' %}"
+                   data-toggle="tooltip"
+                   title="Publish a new ">
+                   <i class="fa fa-pencil"></i> Create a new campaign
+                </a>
+                <br>
+                <br>
+                <br>
+            {% endif %}
+
+            {% for manifesto in aspirant_manifestos %}
+                 <div class="w3-container">
+                    <h4 class="w3-text-blue w3-left">{{ manifesto.manifesto_title }}</h4>
+                    <span class="pull-right">
+                        <a class="w3-btn-floating w3-green w3-text-white w3-small"
+                            href="{% url 'campaign:manifesto_reception_analysis' manifesto_id=manifesto.manifesto_id %}"
+                            data-toggle="tooltip"
+                            title="Campaign analysis">
+                            <i class="fa fa-line-chart"></i>
+                        </a>
+                         &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="w3-btn-floating w3-teal w3-text-white w3-small ctrl-broadcast-manifesto"
+                            data-value="{{ manifesto.manifesto_id }}"
+                            data-toggle="tooltip"
+                            title="Broadcast this campaign">
+                            <i class="fa fa-send-o"></i>
+                        </a>
+                         &nbsp;&nbsp;&nbsp;&nbsp;
+                        <a class="w3-btn-floating w3-blue w3-text-white w3-small"
+                            href="{% url 'campaign:edit_manifesto_form' manifesto_id=manifesto.manifesto_id %}"
+                            data-toggle="tooltip"
+                            title="Edit this campaign">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </span>
+                    <br>
+                    <br>
+                    <br>
+                    {% for manifesto_item  in manifesto.manifesto_items %}
+                        <div class="w3-container w3-card-2">
+                            <h5 class="w3-text-blue">
+                                {{ forloop.counter }}. {{ manifesto_item.title }}
+                            </h5>
+                            <p>
+                               {{ manifesto_item.content }}
+                            </p>
+                        </div><br>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="row">
+                <div class="col-lg-8 col-md-8 col-sm-8 col-lg-offset-2 col-md-offset-2 col-sm-offset-2 w3-container w3-card-2 w3-padding-4">
+                    <h4 class="w3-center w3-text-blue">Publish a campaign</h4>
+                    <p>
+                        You have not published any campaign. Click on the button below to publish your campaign and share it with your subscribers.
+                    </p>
+
+                    <br>
+                         <a class="w3-btn w3-grey w3-text-white pull-left"
+                           href="{% url 'campaign:new_manifesto_form' %}"
+                           data-toggle="tooltip"
+                           title="Publish a new campaign">
+                            <i class="fa fa-pencil"></i> Create a new campaign
+                        </a>
+                    <br>
+                    <br>
+                </div>
+            </div>
+        {% endif %}
+   </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script>
+        $(document).on('click', '.ctrl-broadcast-manifesto', function(e){
+            e.preventDefault();
+            var MANIFESTO_ID = $(this).data('value');
+            var upload_form = '<div>'
+                +' <form class="w3-form w3-container" id="password-form">'
+                +' <input class="w3-input w3-text-blue" type="password" placeholder="Password" id="password" >'
+                +' <span class="w3-text-red" id="password-response"></span>'
+                +' <br>'
+                +' <span class="w3-text-green" id="srv-response"></span>'
+                +' <br>'
+                +' <a id="btn-broadcast-manifesto" class="w3-btn w3-text-white w3-blue-grey pull-right">Broadcast campaign</a>'
+                +' </form>'
+                +'</div>';
+            $('#page-modal-dialog').addClass('modal-width-20');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Confirm that you want to send campaign');
+            $('#page-modal').modal('show');
+
+            $(document).on('click', '#btn-broadcast-manifesto', function(e){
+                e.preventDefault();
+                $('#btn-broadcast-manifesto').prop('disabled', true);
+                $('#password-response').html('');
+                $('#srv-response').html('');
+                var password = $('#password').val();
+
+                if(password.length < 8){
+                    $('#btn-broadcast-manifesto').prop('disabled', false);
+                    $('#password').addClass('input-error');
+                    return;
+                }
+                else{
+                    $('#password').removeClass('input-error');
+                }
+                var data = {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    manifesto_id: MANIFESTO_ID,
+                    password: password
+                };
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'campaign:broadcast_manifesto' %}",
+                    data: data,
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-broadcast-manifesto').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '1'){
+                            $('#srv-response').html(responseObj['MESSAGE']);
+                            $('#password-form').trigger('reset');
+
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 5500);
+
+                        }else{
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-broadcast-manifesto')
+                            .html('Send campaign')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-broadcast-manifesto')
+                        .html('Send campaign')
+                        .prop('disabled', false);
+                });
+
+            });
+
+        });
+
+        $(document).on('click', '.ctrl-delete-manifesto', function(e){
+            e.preventDefault();
+            var MANIFESTO_ID = $(this).data('value');
+            var upload_form = '<div>'
+                +' <form class="w3-form w3-container" id="password-form">'
+                +' <input class="w3-input w3-text-blue" type="password" placeholder="Password" id="password" >'
+                +' <span id="password-response"></span>'
+                +' <br>'
+                +' <span class="srv-response"></span>'
+                +' <a id="btn-delete-manifesto" class="w3-btn w3-text-white w3-blue-grey pull-right">Delete campaign</a>'
+                +' </form>'
+                +'</div>';
+            $('#page-modal-dialog').addClass('modal-width-20');
+            $('#page-modal-body').html(upload_form);
+            $('#page-modal-footer').html('');
+            $('#page-modal-header').html('Confirm that you want to delete campaign');
+            $('#page-modal').modal('show');
+
+            $(document).on('click', '#btn-delete-manifesto', function(e){
+                e.preventDefault();
+                $('#btn-delete-manifesto').prop('disabled', true);
+                var password = $('#password').val();
+
+                if(password.length < 8){
+                    $('#btn-delete-manifesto').prop('disabled', false);
+                    $('#password').addClass('input-error');
+                    return;
+                }
+                else{
+                    $('#password').removeClass('input-error');
+                }
+                var data = {
+                    csrfmiddlewaretoken: "{{ csrf_token }}",
+                    manifesto_id: MANIFESTO_ID,
+                    password: password
+                };
+
+                var srvRqst = $.ajax({
+                    url: "{% url 'campaign:delete_manifesto' %}",
+                    data: data,
+                    type: 'post',
+                    dataType: 'json',
+                    beforeSend: function(){
+                        $('#btn-delete-manifesto').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...')
+                            .prop('disabled', true);
+                    }
+                });
+
+                srvRqst.done(function (response){
+                    try{
+                        var responseObj = response;
+                        if(responseObj['STATUS'] === '0'){
+                            $('#password-response').html(responseObj['MESSAGE']);
+                        }else{
+
+                           var msgObj = responseObj['MESSAGE'];
+                            var html = '<ul>';
+                            for(var i=0; i< msgObj.length; i++){
+                                var icon = '';
+                                if(msgObj[i]['STATUS'] === '1'){
+                                    icon = '<i class="fa fa-circle w3-text-green"></i>';
+                                }else{
+                                icon = '<i class="fa fa-circle w3-text-red"></i>';
+                                }
+                                html += '<li>['+(i+1)+']'+icon+' '+msgObj[i]['MESSAGE']+'</li>';
+                            }
+                            html += '</ul>';
+                            $('#password-form').trigger('reset');
+                            $('#page-modal-header').html('System response');
+                            $('#page-modal-body').html(html);
+                            $('#page-modal-footer').html('');
+                            window.setTimeout(function(){
+                                window.location.reload();
+                            }, 1200);
+                        }
+                    }catch(exp){}finally {
+                         $('#btn-delete-manifesto')
+                            .html('Delete campaign')
+                            .prop('disabled', false);
+                    }
+                });
+                srvRqst.fail(function (jqXHR, errMsg, errThrown){
+                     $('#btn-delete-manifesto')
+                        .html('Delete campaign')
+                        .prop('disabled', false);
+                });
+            });
+        });
+    </script>
+{% endblock %}

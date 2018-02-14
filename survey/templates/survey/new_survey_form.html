@@ -1,0 +1,729 @@
+{% extends 'accounts/landing.html' %}
+{% load static %}
+{% block content %}
+
+
+    <div class="w3-container w3-center">
+        <h3 class="w3-text-blue"><u>Create a new survey</u></h3>
+    </div>
+
+    <div class="w3-margin">
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab"
+                   class="active disabled-tab"
+                   id="survey-guidelines-tab"
+                   href="#survey-guidelines-container">
+                    <i class="fa fa-info-circle w3-text-blue"></i> Guidelines
+                </a>
+            </li>
+
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                   id="survey-title-tab"
+                   href="#survey-title-container">
+                    <i class="fa fa-clipboard w3-text-teal"></i> Survey Setup
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                    id="survey-content-tab"
+                   href="#survey-content-container">
+                    <i class="fa fa-question-circle-o w3-text-deep-orange"></i> Survey questions
+                </a>
+            </li>
+            <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                   id="survey-recipients-tab"
+                   href="#survey-recipients-container">
+                    <i class="fa fa-users w3-text-blue"></i> Survey recipients
+                </a>
+            </li>
+             <li>
+                <a data-toggle="tab"
+                   class="disabled-tab"
+                   id="approve-and-publish-tab"
+                   href="#approve-and-publish-container">
+                    <i class="fa fa-circle w3-text-green"></i> Approve and publish
+                </a>
+            </li>
+        </ul>
+
+        <!-- tab panes -->
+        <div class="tab-content w3-container">
+            <div class="tab-pane fade active in w3-card-2 w3-padding-4"
+                 id="survey-guidelines-container">
+                <br>
+                <p class="w3-padding-left">
+                    This survey shall be accessed via sms. Keep the content short. 150 characters per item recommended.
+                </p>
+
+                <br>
+                <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right ctrl-move-back"
+                           data-value="survey-title-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade in  w3-card-2"
+                 id="survey-title-container">
+                <br>
+                <div class="w3-container">
+                  <a class="pull-left ctrl-move-next cursor-pointer"
+                      data-value="survey-guidelines-tab">
+                       <i class="fa fa-arrow-left"></i> Back
+                  </a>
+                </div>
+               <form class="form-horizontal"
+                     id="survey-title-form"
+                     method="post">
+                  <br>
+                  <div class="w3-row">
+                    <h4 class="w3-text-blue w3-center">Survey setup</h4>
+                  </div>
+
+                  <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                      <label for="first-name" class="w3-col l2 m2 s2">
+                        Survey title <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-col l6 m6 s6">
+                        <input type="text"
+                          class="w3-input w3-text-blue"
+                          id="survey-title"
+                          placeholder="Survey title">
+                        <span id="survey-title-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+                      <br>
+                      <br>
+                    <div class="w3-container">
+                      <label for="survey-description" class="w3-col l2 m2 s2">
+                        Survey description <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-col l6 m6 s6">
+                        <textarea class="w3-input w3-text-blue"
+                          id="survey-description"
+                          placeholder="Survey description"
+                          rows="5"></textarea>
+                        <span id="survey-description-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <br>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right"
+                           id="btn-set-survey-title"
+                           data-value="survey-content-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                  </div>
+                  <br>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2" id="survey-content-container">
+                <form class="form-horizontal"
+                    id="survey-content-form"
+                    method="post">
+                  <br>
+                  <div class="w3-row  w3-container">
+                      <div class="w3-container">
+                        <a class="w3-small ctrl-move-back w3-text-blue pull-left cursor-pointer"
+                            data-value="survey-title-tab">
+                          <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                      </div>
+
+                    <h4 class="w3-text-blue w3-center">Survey questions</h4>
+                  </div>
+                  <br>
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                      <label for="first-name" class="w3-col l2 m2 s2">
+                        Questions <span class="w3-text-red">*</span>
+                      </label>
+                      <div class="w3-col l6 m6 s6">
+                        <input type="text"
+                          class="w3-input w3-text-blue"
+                          id="question-0"
+                          placeholder="Questions">
+                        <span id="question-0-response" class="w3-text-red"></span>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="w3-container">
+                      <label class="w3-col l2 m2 s2">
+                          Options <span class="w3-text-red">*</span>
+                          <br>
+                          <span class="w3-text-deep-orange">
+                              Separate options with a #.
+                              <span class="w3-small w3-text-brown"> Eg Option 1 # Option 2 # This is another option # Final option</span>
+                          </span>
+                      </label>
+                      <div class="w3-col l6 m6 s6">
+                        <textarea
+                          rows="3"
+                          class="w3-input  w3-text-blue"
+                          id="options-0"
+                          placeholder="Options"></textarea>
+                        <span id="options-0-response" class="w3-text-red"></span>
+                        <br>
+                      </div>
+                    </div>
+                    <br>
+                    <div class="w3-container border-bottom-dotted w3-small">
+                        <div class="w3-rest">
+                            <label for="multiple-answers-question-0">Allow multiple selection</label>
+                            &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="checkbox"
+                              id="multiple-answers-question-0">
+                        </div>
+                    </div>
+                  </div>
+                  <br>
+                  <div class="w3-container" id="more-survey-questions-div"></div>
+                  <div class="w3-container">
+                     <a class="pull-left cursor-pointer" id="ctrl-add-survey-content">
+                        <i class="fa fa-plus-circle w3-text-blue"></i> New question
+                     </a>
+                  </div>
+
+                  <div class="form-group w3-container">
+                    <div class="w3-container">
+                        <a class="w3-btn w3-blue pull-right"
+                           id="btn-get-survey-content"
+                           data-value="survey-recipients-tab">
+                            Next <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                  </div>
+                   <br>
+               </form>
+            </div>
+
+            <div class="tab-pane w3-card-2"
+                id="survey-recipients-container">
+                <br>
+
+                <div class="w3-container">
+                    <div class="w3-container">
+                        <a class="w3-small ctrl-move-back w3-text-blue pull-left cursor-pointer"
+                            data-value="survey-content-tab">
+                          <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                    <h4 class="w3-center w3-text-blue">Select recipients for this survey</h4>
+                </div>
+
+                <div class="w3-container">
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                             <div class="col-lg-4 col-sm-4 col-md-4">
+                               <label>
+                                  <span>
+                                    Age range [<span id="min-age">18</span> to <span id="max-age">116 </span> yrs]
+                                  </span>
+                                </label>
+                                <div class="" id="age-range"></div>
+                             </div>
+                             <div class="col-lg-4 col-sm-4 col-md-4">
+                                Gender<br>
+                                <select id="survey-recipient-filter-gender">
+                                    <option value="NULL">--Select--</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                             </div>
+                        </div>
+                        <br>
+                        <div class="form-group row">
+                          <div class="col-lg-4 col-sm-4 col-md-4">
+                            County<br>
+                            <select id="survey-recipient-filter-county-id">
+                                <option value="NULL">--Select county--</option>
+                                {% for county in county_list %}
+                                    <option value="{{ county.id }}">{{ county.county_name }}</option>
+                                {% endfor %}
+                            </select>
+                          </div>
+                         <div class="col-lg-4 col-sm-4 col-md-4">
+                            Constituency<br>
+                            <select id="survey-recipient-filter-constituency-id">
+                                <option value="NULL">--Select--</option>
+                            </select>
+                          </div>
+                          <div class="col-lg-4 col-sm-4 col-md-4">
+                            Ward<br>
+                            <select id="survey-recipient-filter-ward-id">
+                                <option value="NULL">--Select --</option>
+                            </select>
+                          </div>
+                        </div>
+                        <br>
+                        <span class="w3-text-brown"><b> Number of recipients:
+                            <span id="num-of-recipients">{{ num_of_subscribers }}</span>
+                            </b>
+                        </span>
+                        <br>
+                        <div class="form-group w3-container">
+                            <div class="w3-container">
+                                <a class="w3-btn w3-blue pull-right"
+                                   id="btn-filter-survey-recipients"
+                                   data-value="approve-and-publish-tab">
+                                   Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="tab-pane w3-card-2" id="approve-and-publish-container">
+                <form class="form-horizontal"
+                     id="survey-approval-form"
+                     method="post">
+                    <br>
+                    <br>
+                    <div class="w3-container">
+                        <a class="w3-small ctrl-move-back w3-text-blue pull-left cursor-pointer"
+                        data-value="survey-recipients-tab">
+                        <i class="fa fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                    <div class="w3-container">
+                        <h4 class="w3-center w3-text-blue w3-large" id="val-survey-title"></h4>
+                    </div>
+
+                    <div id="display-survey-content" class="w3-container">
+
+                    </div>
+
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                          <label for="first-name" class="w3-col l2 m2 s2">
+                            Password <span class="w3-text-red">*</span>
+                          </label>
+                          <div class="w3-col l5 m5 s5">
+                            <input type="password"
+                              class="w3-input w3-text-blue"
+                              id="password"
+                              placeholder="Password">
+                            <span id="password-response" class="w3-text-red"></span>
+                          </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group w3-container">
+                        <div class="w3-container">
+                            <a class="w3-btn w3-blue-grey pull-right"
+                               id="btn-publish-survey">
+                                <i class="fa fa-circle w3-text-green"></i> Publish Survey
+                            </a>
+                        </div>
+                    </div>
+                </form>
+                <br>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extrahead %}
+    <script src="{% static 'accounts/jqueryui/jquery-ui.min.js' %}"></script>
+
+    <script>
+        var SUBSCRIBER_FILTERS = {
+            min_age: '',
+            max_age: '',
+            gender: '',
+            county_id: '',
+            constituency_id: '',
+            ward_id: ''
+        };
+
+        // Age slider
+        $('#age-range').slider({
+          range: true,
+          min: 18,
+          step: 1,
+          max: 116,
+          values: [ 18, 116 ],
+          slide: function(e, ui){
+            var age_vals = ui.values;
+            $('#min-age').html(age_vals[0]);
+            $('#max-age').html(age_vals[1]);
+            SUBSCRIBER_FILTERS.min_age = age_vals[0] +'';
+            SUBSCRIBER_FILTERS.max_age = age_vals[1] +'';
+            GetSubscribersCountOnFilter();
+          }
+        });
+
+        var CUR_INDEX = 0;
+        var INDEX_ARR = [0];
+        var SURVEY_DATA = {
+            surveyTitle: '',
+            surveyDescription: '',
+            surveyContent: [],
+            password: ''
+        };
+
+        //Add survey item
+        $(document).on('click', '#ctrl-add-survey-content', function(e){
+            e.preventDefault();
+            CUR_INDEX++;
+            INDEX_ARR.push(CUR_INDEX);
+            var form = '<div>'
+              +'<a class="pull-right ctrl-remove-survey-item cursor-pointer" data-value="'+CUR_INDEX+'">'
+              +' <i class="fa fa-times-circle w3-text-red"></i>'
+              +'</a>'
+              +'<div class="w3-container">'
+              +'<label for="first-name" class="w3-col l2 m2 s2">'
+              +'  Question <span class="w3-text-red">*</span>'
+              +'</label>'
+              +'<div class="w3-col l6 m6 s6">'
+              +'  <input type="text"'
+              +'    class="w3-input text w3-text-blue"'
+              +'    id="question-'+CUR_INDEX+'"'
+              +'    placeholder="Question">'
+              +'  <span id="question-'+CUR_INDEX+'-response" class="w3-text-red"></span>'
+              +'</div>'
+              +'</div>'
+              +'      <br>'
+              +'      <div class="w3-container">'
+              +'         <label for="first-name" class="w3-col l2 m2 s2">'
+              +'        Options <span class="w3-text-red">*</span>'
+              +'            <br>'
+              +'            <span class="w3-text-deep-orange">'
+              +'                Separate options with a #.'
+              +'                <span class="w3-small w3-text-brown"> Eg Option 1 # Option 2 # This is another option # Final option</span>'
+              +'            </span>'
+              +'         </label>'
+              +'         <div class="w3-col l6 m6 s6">'
+              +'           <textarea'
+              +'             rows="3"'
+              +'             class="w3-input w3-text-blue"'
+              +'             id="options-'+CUR_INDEX+'"'
+              +'             placeholder="Options"></textarea>'
+              +'           <span id="options-'+CUR_INDEX+'-response" class="w3-text-red"></span>'
+              +'           <br>'
+              +'         </div>'
+              +'       </div>'
+              +'     <br>'
+              +'     <div class="w3-container border-bottom-dotted">'
+              +'          <div class="w3-rest">'
+              +'              <label for="multiple-answers-question-'+CUR_INDEX+'">Allow multiple selection</label>'
+              +'              &nbsp;&nbsp;&nbsp;&nbsp;'
+              +'              <input type="checkbox"'
+              +'                id="multiple-answers-question-'+CUR_INDEX+'">'
+              +'          </div>'
+              +'      </div>'
+              +'    </div>'
+              +'<br>'
+              +'</div>';
+            $('#more-survey-questions-div').append(form);
+        });
+
+        //Remove survey item
+        $(document).on('click', '.ctrl-remove-survey-item', function(e){
+            e.preventDefault();
+            var index = $(this).data('value');
+            var i = INDEX_ARR.indexOf(parseInt(index));
+            if (i > -1) {
+                INDEX_ARR.splice(i, 1);
+            }
+            $(this).parent().remove();
+        });
+
+        //Navigate through tabs
+        $(document).on('click', '.ctrl-move-back, .ctrl-move-next', function(e){
+            e.preventDefault();
+            var selector_id = $(this).data('value');
+            $('#'+selector_id).tab('show');
+        });
+
+        //Get the survey title
+        $(document).on('click', '#btn-set-survey-title', function(e){
+            e.preventDefault();
+            var nextTab = $(this).data('value');
+            var surveyTitle = $('#survey-title').val();
+            surveyTitle = surveyTitle.trim();
+            var surveyDescription = $('#survey-description').val();
+            var errorExists = false;
+
+            if(surveyTitle.length <3){
+                $('#survey-title').addClass('input-error');
+                errorExists = true;
+            }else{
+                $('#survey-title').removeClass('input-error');
+            }
+
+            if(errorExists === false){
+                SURVEY_DATA.surveyTitle = surveyTitle;
+                SURVEY_DATA.surveyDescription = surveyDescription;
+                $('#'+nextTab).tab('show');
+            }else{return;}
+        });
+
+        //Get survey content
+        $(document).on('click', '#btn-get-survey-content', function(e){
+            var nextTab = $(this).data('value');
+            var  errorExists = false;
+            SURVEY_DATA.surveyContent.length = 0;
+            for (var i = 0; i < INDEX_ARR.length; i++) {
+                var question = $('#question-' + INDEX_ARR[i]).val();
+                question = question.trim();
+
+                var options = $('#options-' + INDEX_ARR[i]).val();
+                options = options.trim();
+
+                var isMultipleChoice = 0;
+
+                if($('#multiple-answers-question-'+INDEX_ARR[i]).is(":checked")){
+                   isMultipleChoice = 1;
+                }
+
+                if (question.length < 3){
+                    errorExists = true;
+                    $('#question-' + INDEX_ARR[i]).addClass('input-error');
+                }else{
+                    $('#question-' + INDEX_ARR[i]).removeClass('input-error');
+                }
+
+                if (options.length < 3) {
+                    errorExists = true;
+                    $('#options-' + INDEX_ARR[i]).addClass('input-error');
+                } else {
+                    $('#options-' + INDEX_ARR[i]).removeClass('input-error');
+                }
+
+                SURVEY_DATA.surveyContent.push({
+                     question: question,
+                     option: options,
+                     isMultipleChoice: isMultipleChoice
+                });
+            }
+
+            if(errorExists === true){
+                return;
+            }else{
+                console.log(SURVEY_DATA);
+                $('#'+nextTab).tab('show');
+                DisplaySurvey();
+            }
+        });
+
+        //Filter results
+        $(document).on('click', '#btn-filter-survey-recipients', function(e){
+            e.preventDefault();
+            var nextTab = $(this).data('value');
+            $('#'+nextTab).tab('show');
+        });
+
+        //Publish survey
+        $(document).on('click', '#btn-publish-survey', function(e){
+            e.preventDefault();
+            $('#btn-publish-survey').prop('disabled', true);
+            var password = $('#password').val();
+            if(password.length < 8){
+                $('#btn-publish-survey').prop('disabled', false);
+                $('#password').addClass('input-error');
+                return;
+            }else{
+                 $('#password').removeClass('input-error');
+            }
+            SURVEY_DATA.password = password;
+            for(var i= 0; i< SURVEY_DATA.surveyContent.length; i++){
+                SURVEY_DATA.surveyContent[i]['question_number'] = (i+1)
+            }
+            var srvRqst = $.ajax({
+                url: "{% url 'survey:publish_new_survey' %}",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    surveyTitle: SURVEY_DATA.surveyTitle,
+                    surveyDescription: SURVEY_DATA.surveyDescription,
+                    password: SURVEY_DATA.password,
+                    surveyContent: JSON.stringify(SURVEY_DATA.surveyContent),
+                    subscriber_filter: JSON.stringify(SUBSCRIBER_FILTERS)
+                },
+                type: 'post',
+                datatype: 'json',
+                beforeSend: function(){
+                    $('#btn-publish-survey').html('<i class="fa fa-circle-o-notch fa-spin"></i> Loading...');
+                }
+            });
+
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    if(responseObj['STATUS'] === '0'){
+                        $('#password-response').html(responseObj['MESSAGE'])
+                    }else{
+                        var html = '<ul class="w3-ul">';
+                        var msgObj = responseObj['MESSAGE'];
+                        for(var i=0; i< msgObj.length; i++){
+                            var icon = '';
+                            if(msgObj[i]['STATUS'] === '1'){
+                                icon = '<i class="fa fa-circle w3-text-green"></i>';
+                            }else{
+                            icon = '<i class="fa fa-circle w3-text-red"></i>';
+                            }
+                            html += '<li>['+(i+1)+']'+icon+' '+msgObj[i]['MESSAGE']+'</li>';
+                        }
+                        html += '</ul>';
+                        $('#page-modal-header').html('');
+                        $('#page-modal-body').html(html);
+                        $('#page-modal-footer').html('');
+                        $('#page-modal').modal('show');
+
+                        $('#survey-title-form').trigger('reset');
+                        $('#survey-content-form').trigger('reset');
+                        $('#more-survey-content-div').html('');
+                        $('#survey-guidelines-tab').tab('show');
+                        ResetSurveyData();
+                    }
+                }catch(exp){
+
+                }finally{
+                     $('#btn-publish-survey').html('<i class="fa fa-circle w3-text-green"></i> Publish survey').prop('disabled', false);
+                }
+            });
+
+            srvRqst.fail(function(jqHQR, errMsg, errThrown){
+                $('#btn-publish-survey').html('<i class="fa fa-circle w3-text-green"></i> Publish survey').prop('disabled', false);
+            });
+        });
+
+        //Display survey
+        function DisplaySurvey(){
+            var surveyContent = '';
+            for (var i = 0; i < SURVEY_DATA.surveyContent.length; i++ ){
+                surveyContent += '<div class="">';
+
+                surveyContent += (i+1)+' '+SURVEY_DATA.surveyContent[i].question;
+                var options_arr = SURVEY_DATA.surveyContent[i].option.split('#');
+                var options_html = '<ol class="w3-text-blue">';
+                for(var j = 0; j< options_arr.length; j++){
+                    options_html += '<li>'+options_arr[j] + '</li>'
+                }
+                options_html += '</ol>';
+                surveyContent += options_html + '</div><br>';
+            }
+            $('#display-survey-content').html(surveyContent);
+        }
+
+        //Reset survey data
+        function ResetSurveyData(){
+            SURVEY_DATA.surveyContent.length = 0;
+            SURVEY_DATA.surveyTitle = '';
+            SURVEY_DATA.surveyDescription = '';
+            SURVEY_DATA.password = '';
+        }
+
+        //On selecting gender
+        $(document).on('change', '#survey-recipient-filter-gender', function(e){
+            e.preventDefault();
+            SUBSCRIBER_FILTERS.gender = $(this).val();
+            GetSubscribersCountOnFilter();
+        });
+
+        //On selecting county
+        $(document).on('change', '#survey-recipient-filter-county-id', function(e){
+            e.preventDefault();
+            var county_id = $(this).val();
+            SUBSCRIBER_FILTERS.county_id = county_id;
+            GetSubscribersCountOnFilter();
+            var srvRqst = $.ajax({
+                url: '{% url "site_admin:get_constituency_by_county" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    county_id: county_id
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var opts = '<option value="NULL">Select Constituency</option>';
+                    for (var i =0; i< responseObj.length; i++){
+                        opts += '<option value="'+responseObj[i]['id']+'">'
+                            + responseObj[i]['constituency_name']
+                            + '</option>';
+                    }
+                    $('#survey-recipient-filter-constituency-id').html(opts);
+                }catch(exp){}finally {}
+            });
+         });
+
+        //On selecting constituency
+        $(document).on('change', '#survey-recipient-filter-constituency-id', function(e){
+            e.preventDefault();
+            var constituency_id = $(this).val();
+            SUBSCRIBER_FILTERS.constituency_id = constituency_id;
+            GetSubscribersCountOnFilter();
+
+            var srvRqst = $.ajax({
+                url: '{% url "site_admin:get_ward_by_constituency" %}',
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}',
+                    constituency_id: constituency_id,
+                },
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    var opts = '<option value="NULL">Select Ward</option>';
+                    for (var i =0; i< responseObj.length; i++){
+                        opts += '<option value="'+responseObj[i]['id']+'">'
+                            + responseObj[i]['ward_name']
+                            + '</option>';
+                    }
+                    $('#survey-recipient-filter-ward-id').html(opts);
+                }catch(exp){}finally {}
+            });
+         });
+
+        //On selecting ward
+        $(document).on('change', '#survey-recipient-filter-ward-id', function(e){
+            e.preventDefault();
+            var ward_id = $(this).val();
+            SUBSCRIBER_FILTERS.ward_id = ward_id;
+            GetSubscribersCountOnFilter()
+        });
+
+        //Get subscribers count from filters
+        function GetSubscribersCountOnFilter(){
+            var data = SUBSCRIBER_FILTERS;
+            data['csrfmiddlewaretoken'] = '{{ csrf_token }}';
+            var srvRqst = $.ajax({
+                url: '{% url 'subscribers:get_subscribers_count_on_filter' %}',
+                data: data,
+                type: 'post',
+                datatype: 'json'
+            });
+            srvRqst.done(function(response){
+                try{
+                    var responseObj = $.parseJSON(response);
+                    $('#num-of-recipients').html(responseObj['NUM_OF_SUBSCRIBERS']);
+                }catch(exp){}finally {}
+            });
+        }
+    </script>
+{% endblock %}
+
