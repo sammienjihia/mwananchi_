@@ -328,8 +328,11 @@ def register_single_aspirant(request):
                     recipient = [user_create]
                     email = SendEmail()
                     txt_template = 'email/email_temlate_aspirant_registration.txt'
+                    print ("0000000")
                     html_template = 'email/email_template_aspirant_registration.html'
+                    print ("11111111")
                     send_mail = email.send_email(recipient, request, txt_template, html_template)
+                    print ("222222222")
                     if send_mail[0]['STATUS'] == '1':
                         return_data['MESSAGE'].append({
                             'STATUS': '1',
