@@ -336,6 +336,8 @@ def register_single_aspirant(request):
                             'MESSAGE': 'An email has been sent to the client'
                         })
                     else:
+                        print ("*****")
+                        print (send_mail)
                         return_data['MESSAGE'].append({
                             'STATUS': '0',
                             'MESSAGE': 'Email delivery to client failed permanently'
