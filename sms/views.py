@@ -408,7 +408,7 @@ def receive_sms(request):
     date = request.POST.get('date') # Date time when the message was sent
     msg_id = request.POST.get('id') # Message ID from Africa's Talking
 
-    aspirant = Client.objects.all()[0]
+    aspirant = Client.objects.all()
 
     sms_inbox = Inbox(
         africastalking_msg_id=msg_id,
