@@ -1,0 +1,9 @@
+*/*.pyc
+*/migrations/*
+!*/migrations/__init__.py
+.env
+*.txt
+.idea
+.sqlite3
+*/*/*.png
+
