@@ -26,7 +26,7 @@ class SendEmail:
             sender = settings.EMAIL_HOST_USER
             plaintext = get_template(txt_template)
             htmly = get_template(html_template)
-            subject, from_email, to = 'Brandsense Account', sender, recipient.email
+            subject, from_email, to = 'Mwananchi Account', sender, recipient.email
             text_content = plaintext.render(data)
             html_content = htmly.render(data)
             try:
