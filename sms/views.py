@@ -399,8 +399,10 @@ def receive_sms(request):
         data_to_log['date_time'] = str(datetime.datetime.now())
         f.write("{}\n".format(json.dumps(data_to_log)))
         f.close()
-    except:
-        pass
+    except Exception as e:
+        f = open("log.log", "a+")
+        f.write(str(e))
+        f.close()
 
     sender = request.POST.get('from') # phone number from which the message originated from
     message = request.POST.get('text') # Message from sender
