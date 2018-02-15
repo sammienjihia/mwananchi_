@@ -27,7 +27,7 @@ class Inbox(models.Model):
     message_type = models.CharField(max_length=20, null=True, blank=True)
     date_received = models.DateTimeField()
     date_created = models.DateTimeField(auto_now=True)
-    africastalking_msg_id = models.CharField(max_length=100, null=True, blank=True)
+    africastalking_msg_id = models.CharField(max_length=100, unique=True)
     polarity = models.FloatField(null=True, blank=True)
     subjectivity = models.FloatField(null=True, blank=True)
     sentiment = models.CharField(max_length=20, null=True, blank=True)
