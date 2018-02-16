@@ -480,7 +480,7 @@ def receive_sms(request):
                     sms_util.send_single_sms(phone_number, manifesto_msg)
 
                     manifesto_item_reception = CampaignItemsReception(
-                        manifesto_item=CampaignItems.objects.get(id=manifesto_item_id),
+                        campaign_item=CampaignItems.objects.get(id=manifesto_item_id),
                         date_read=datetime.datetime.now())
 
                     try:
