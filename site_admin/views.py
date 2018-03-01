@@ -430,7 +430,10 @@ def flutterwave_response(request):
         post_file.write("\n")
     result = json.loads(data)
 
+    print result
+
     print data
+
     return HttpResponse(data)
 
 
