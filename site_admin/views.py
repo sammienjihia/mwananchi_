@@ -423,6 +423,13 @@ def list_of_volunteers(request, offset=0):
 def flutterwave_response(request):
     data = request.body
 
+    with open('flutterwave_resulturl_post_file.txt', 'a') as post_file:
+        post_file.write(data)
+        post_file.write("\n")
+        post_file.write(str(type(data)))
+        post_file.write("\n")
+    result = json.loads(data)
+
     print data
     return HttpResponse(data)
 
