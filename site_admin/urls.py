@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^list_of_clients$', views.list_of_aspirants, name='list_of_aspirants'),
     url(r'^list_of_clients/(?P<offset>[0-9]+)/$', views.list_of_aspirants, name='list_of_aspirants'),
     url(r'^list_of_volunteers/(?P<offset>[0-9]+)/$', views.list_of_volunteers, name='list_of_volunteers'),
+    url(r'^flutterwave_response$', views.flutterwave_response, name='flutterwave_response'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

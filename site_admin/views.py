@@ -420,6 +420,12 @@ def list_of_volunteers(request, offset=0):
     return render(request, template, context)
 
 
+def flutterwave_response(request):
+    data = request.body
+
+    print data
+
+
 
 
 
