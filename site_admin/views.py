@@ -424,6 +424,7 @@ def flutterwave_response(request):
     data = request.body
 
     print data
+    return HttpResponse(data)
 
 
 
