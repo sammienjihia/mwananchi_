@@ -422,6 +422,7 @@ def list_of_volunteers(request, offset=0):
 
 def flutterwave_response(request):
     data = request.body
+    result = json.loads(data)
 
     try:
         with open('flutterwave_resulturl_post_file.txt', 'a') as post_file:
@@ -429,7 +430,7 @@ def flutterwave_response(request):
             post_file.write("\n")
             post_file.write(str(type(data)))
             post_file.write("\n")
-        result = json.loads(data)
+
 
     except Exception as e:
         print e
@@ -451,7 +452,7 @@ def flutterwave_response(request):
 
     print data
 
-    return HttpResponse(data)
+    return HttpResponse("ok")
 
 
 
