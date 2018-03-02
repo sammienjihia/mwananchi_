@@ -424,11 +424,19 @@ def flutterwave_response(request):
     data = request.body
 
     with open('flutterwave_resulturl_post_file.txt', 'a') as post_file:
-        post_file.write(data)
+        post_file.write(str(data))
         post_file.write("\n")
         post_file.write(str(type(data)))
         post_file.write("\n")
     result = json.loads(data)
+
+    with open('flutterwave_resulturl_post_file2.txt', 'a') as post_file:
+        post_file.write(result)
+        post_file.write("\n")
+        post_file.write(str(type(result)))
+        post_file.write("\n")
+        post_file.write(str(result))
+        post_file.write("\n")
 
     print result
 
