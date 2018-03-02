@@ -421,8 +421,20 @@ def list_of_volunteers(request, offset=0):
 
 
 def flutterwave_response(request):
-    data = request.body
-    result = json.loads(data)
+    data = request.data
+
+    try:
+        result = json.loads(data)
+        with open('flutterwave_resulturl_post_file3.txt', 'a') as post_file:
+            post_file.write(result)
+            post_file.write("\n")
+            post_file.write(str(type(result)))
+            post_file.write("\n")
+            post_file.write(str(result))
+            post_file.write("\n")
+    except Exception as e:
+        pass
+
 
     try:
         with open('flutterwave_resulturl_post_file.txt', 'a') as post_file:
@@ -437,20 +449,43 @@ def flutterwave_response(request):
 
 
     try:
+        headers = ''
+        for header, value in request.META.items():
+            if not header.startswith('HTTP'):
+                continue
+            header = '-'.join([h.capitalize() for h in header[5:].lower().split('_')])
+            headers += '{}: {}\n'.format(header, value)
 
-        with open('flutterwave_resulturl_post_file2.txt', 'a') as post_file:
-            post_file.write(result)
-            post_file.write("\n")
-            post_file.write(str(type(result)))
-            post_file.write("\n")
-            post_file.write(str(result))
-            post_file.write("\n")
+            with open('flutterwave_resulturl_post_file4.txt', 'a') as post_file:
+                post_file.write(request.method)
+                post_file.write("\n")
+                post_file.write(request.META['CONTENT_LENGTH'])
+                post_file.write("\n")
+                post_file.write(request.META['CONTENT_TYPE'])
+                post_file.write("\n")
+                post_file.write(headers)
+                post_file.write("\n")
+                post_file.write(request.body)
+                post_file.write("\n")
+
+
+        return (
+            '{method} HTTP/1.1\n'
+            'Content-Length: {content_length}\n'
+            'Content-Type: {content_type}\n'
+            '{headers}\n\n'
+            '{body}'
+        ).format(
+            method=request.method,
+            content_length=request.META['CONTENT_LENGTH'],
+            content_type=request.META['CONTENT_TYPE'],
+            headers=headers,
+            body=request.body,
+        )
+
+
     except Exception as e:
         print e
-
-    print result
-
-    print data
 
     return HttpResponse("ok")
 
