@@ -421,7 +421,8 @@ def list_of_volunteers(request, offset=0):
 
 
 def flutterwave_response(request):
-    data = request.data
+    data = request.body
+    
 
     try:
         result = json.loads(data)
